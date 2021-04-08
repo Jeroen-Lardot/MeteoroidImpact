@@ -1,7 +1,10 @@
 from DataExtraction import DataExtraction
+from VelocityModel import VelocityModel
 
 data = DataExtraction(str("spenvisdata.csv"))
-print(data.getIndividualFluxes())
+velocityData = VelocityModel(data.getMasses())
+print(velocityData.getVelocities())
+
 
 
 
