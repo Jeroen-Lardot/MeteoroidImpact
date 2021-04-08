@@ -21,6 +21,7 @@ class DataExtraction:
     def getIndividualFluxes(self):
         return self.individualFlux
 
+    # Method calculates the individual flux for every mass, instead of the cummulative flux
     def __getIndividualFlux(self):
         indFlux = []
         i = 0
@@ -29,5 +30,6 @@ class DataExtraction:
         indFlux.append(self.getFluxes()[len(self.getFluxes())-1])
         return indFlux
 
+    # Method calculates the total amount of impacts for a certain area (m^2) and time span (yr), for a certain mass range
     def getImpacts(self, smallest, largest, area, time):
         return (self.getFluxes()[smallest]-self.getFluxes()[largest])*area*time
