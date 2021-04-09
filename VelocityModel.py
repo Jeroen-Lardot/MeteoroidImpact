@@ -17,9 +17,9 @@ class VelocityModel:
     def __velocityModel(self, mass):
         if(mass > 10**(-9)):
             return 7
-        if(10**(-15) < mass <= 10**(-9)):
-            return self.__line(10**-15, 20, 10**-9, 7, mass)
-        if(mass <= 10**(-15)):
+        if(10**(-16) < mass <= 10**(-9)):
+            return self.__line(10**-16, 20, 10**-9, 7, mass)
+        if(mass <= 10**(-16)):
             return 20
         return None
 
