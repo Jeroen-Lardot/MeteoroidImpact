@@ -1,6 +1,7 @@
 from DataExtraction import DataExtraction
 from VelocityModel import VelocityModel
 import matplotlib.pyplot as plt
+import numpy as np
 
 data = DataExtraction(str("spenvisdata.csv"))
 velocityData = VelocityModel(data.getMasses())
