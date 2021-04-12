@@ -30,11 +30,6 @@ class VelocityModel:
     def __line(self, x1, y1, x2, y2, X):
         a = (y2 - y1) / (x2 - x1)
         return a * (X - x1) + y1
-
-    # Returns the Y value of the function Y = f(X), where f(X) is the straight line through (log(x1),y1) and (log(x2),y2)
-    def __logline(self, x1, y1, x2, y2, X):
-        a = (y2 - y1) / (np.log(x2) - np.log(x1))
-        return a * (np.log(X) - np.log(x1)) + y1
     
     # Returns Y value of the function Y = f(X) = b*log(a*X) interpolating between two points (x1,y1) and (x2,y2)
     def __log(self, x1, y1, x2, y2, X):
