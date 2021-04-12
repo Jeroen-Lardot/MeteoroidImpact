@@ -21,7 +21,7 @@ class VelocityModel:
             return 7
         if(10**(-16) < mass <= 10**(-9)):
             #return self.__line(10**-16, 20, 10**-9, 7, mass) #Choose interpolation: self.__line -> linear;
-            return self.__log(10**-16, 20, 10**-9, 7, mass) #self.__log -> logaritmic
+            return self.__logline(10**-16, 20, 10**-9, 7, mass) #self.__log -> logaritmic
         if(mass <= 10**(-16)):
             return 20
         return None
@@ -30,8 +30,19 @@ class VelocityModel:
     def __line(self, x1, y1, x2, y2, X):
         a = (y2 - y1) / (x2 - x1)
         return a * (X - x1) + y1
+
+    # Returns the Y value of the function Y = f(X), where f(X) is the straight line through (log(x1),y1) and (log(x2),y2)
+    def __logline(self, x1, y1, x2, y2, X):
+        a = (y2 - y1) / (np.log(x2) - np.log(x1))
+        return a * (np.log(X) - np.log(x1)) + y1
+    
     # Returns Y value of the function Y = f(X) = b*log(a*X) interpolating between two points (x1,y1) and (x2,y2)
     def __log(self, x1, y1, x2, y2, X):
         b = (y1-y2)/np.log(x1/x2)
         a = np.exp(y1/b)/x1
         return (b*np.log(a*X))
+
+    # Returns the Y value of the function Y = f(X), where f(X) is the straight line through (log(x1),y1) and (log(x2),y2)
+    def __logline(self, x1, y1, x2, y2, X):
+        a = (y2 - y1) / (np.log(x2) - np.log(x1))
+        return a * (np.log(X) - np.log(x1)) + y1
