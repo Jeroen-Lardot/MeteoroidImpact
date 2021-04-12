@@ -39,5 +39,5 @@ class VelocityModel:
 
     # Returns the Y value of the function Y = f(X), where f(X) is the straight line through (log(x1),y1) and (log(x2),y2)
     def __logline(self, x1, y1, x2, y2, X):
-        a = (y2 - y1) / (np.log(x2/x1))
-        return a * (np.log(X/x1)) + y1
+        a = (y2 - y1) / np.log(x2/x1)
+        return a * np.log(X/x1) + y1
