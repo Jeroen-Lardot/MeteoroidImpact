@@ -6,17 +6,27 @@ class VELOCITY(Enum):
     LINEAR = auto()
     OTHER = auto()
 
-    def velocity(self, mass):
+    def getVelocity(self, mass):
         if (self == VELOCITY.LOGARITHMIC):
             return self.velocityModel(mass)
 
         if (self == VELOCITY.LINEAR):
-            return self.velocityModel(mass)
+            return 0
 
         if (self == VELOCITY.OTHER):
-            return self.velocityModel(mass)
+            return 0
 
 
+
+
+
+
+
+
+
+
+
+# Defining methods
     def velocityModel(self, mass):
         if (mass > 10 ** (-9)):
             return 7

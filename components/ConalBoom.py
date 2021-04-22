@@ -3,8 +3,8 @@ from components.Component import Component
 
 
 class ConalBoom(Component):
-    def __init__(self, density, minradius, maxradius, thickness, height):
-        super().__init__("ConalBoom", density, 0, thickness)
+    def __init__(self, material, minradius, maxradius, thickness, height):
+        super().__init__("Conal Boom", material, 0, thickness)
         self.height = height
         self.minradius = minradius
         self.maxradius = maxradius

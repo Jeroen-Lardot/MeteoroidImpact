@@ -2,10 +2,13 @@ from components.ConalBoom import ConalBoom
 from components.Guard import Guard
 from components.Probe import Probe
 from components.StraightBoom import StraightBoom
+from models.DamageModel import DamageModel
 
 
 class Spacecraft:
-    def __init__(self):
+    def __init__(self, environment):
+        self.damageModel = DamageModel()
+        self.environment = environment
         self.components = []
 
     def addProbe(self, density, radius, thickness):
@@ -20,9 +23,14 @@ class Spacecraft:
     def addConalBoom(self, density, minradius, maxradius, thickness, height):
         self.components.append(ConalBoom(density, minradius, maxradius, thickness, height))
 
-    def listComponents(self):
-        print([self.components[i].getName() for i in range(len(self.components))])
+    def getComponentNames(self):
+        return [component.getName() for component in self.components]
 
     def getComponents(self):
         return self.components
 
+    def getExposedArea(self):
+        return sum(component.exposedArea() for component in self.components)
+
+    def getAreaDamageRates(self):
+        return [self.damageModel.areaDamageRate(component, self.environment) for component in self.components]

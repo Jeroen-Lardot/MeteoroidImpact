@@ -1,7 +1,7 @@
 class Component:
-    def __init__(self, name, density, radius, thickness):
+    def __init__(self, name, material, radius, thickness):
         self.name = name
-        self.density = density
+        self.material = material
         self.radius = radius
         self.thickness = thickness
 
@@ -11,11 +11,11 @@ class Component:
     def setName(self, name):
         self.name = name
 
-    def getDensity(self):
-        return self.density
+    def getMaterial(self):
+        return self.material
 
-    def setDensity(self, density):
-        self.density = density
+    def setMaterial(self, material):
+        self.material = material
 
     def getRadius(self):
         return self.radius
