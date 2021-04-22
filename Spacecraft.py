@@ -21,7 +21,7 @@ class Spacecraft:
         self.components.append(ConalBoom(density, minradius, maxradius, thickness, height))
 
     def listComponents(self):
-        print([self.components[component].getName() for component in self.components])
+        print([self.components[i].getName() for i in range(len(self.components))])
 
     def getComponents(self):
         return self.components

@@ -1,9 +1,10 @@
-from Component import Component
 import numpy as np
+from components.Component import Component
+
 
 class ConalBoom(Component):
     def __init__(self, density, minradius, maxradius, thickness, height):
-        super.__init__(self, "ConalBoom", density, 0, thickness)
+        super().__init__("ConalBoom", density, 0, thickness)
         self.height = height
         self.minradius = minradius
         self.maxradius = maxradius
@@ -27,4 +28,4 @@ class ConalBoom(Component):
         self.maxradius = maxradius
 
     def exposedArea(self):
-        return np.pi * (self.getMinRadius() + self.getMaxRadius()) * np.sqrt((self.getMaxRadius-self.getMinRadius)**2+self.getHeight()**2) + np.pi * (self.getMinRadius()**2+self.getMaxRadius()**2)
+        return np.pi * (self.getMinRadius() + self.getMaxRadius()) * np.sqrt((self.getMaxRadius()-self.getMinRadius())**2+self.getHeight()**2)

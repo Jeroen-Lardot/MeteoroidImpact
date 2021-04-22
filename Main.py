@@ -1,18 +1,19 @@
-from DataExtraction import DataExtraction
-from VelocityModel import VelocityModel
-import matplotlib.pyplot as plt
-import numpy as np
+from Environment import Environment
+from Spacecraft import Spacecraft
+from models.VELOCITY import VELOCITY
 
-data = DataExtraction(str("spenvisdata.csv"))
-velocityData = VelocityModel(data.getMasses())
-print(velocityData.getVelocities())
+spacecraft = Spacecraft()
+environment = Environment("models/spenvisdata.csv", VELOCITY.LOGARITHMIC)
 
-y = []
-i=0
-for i in range(len(data.getDiameters())):
-    y.append(((data.getMasses()[i] / 100) ** 2) * data.getFluxes()[i])
+#Add components to spacecraft.
+spacecraft.addProbe(2.7, 0.040, 0.003)
+spacecraft.addProbe(2.7, 0.040, 0.003)
+spacecraft.addGuard(2.7, 0.016, 0.003, 0.1)
+spacecraft.addGuard(2.7, 0.016, 0.003, 0.1)
+spacecraft.addConalBoom(2.7, 0.01095, 0.050, 0.003, 0.9)
+spacecraft.addStraightBoom(2.7, 0.01095, 0.003, 0.9)
 
-plt.plot(data.getMasses(), y, "b")
-plt.savefig("plots/test.png")
-
+#List spacecraft components
+spacecraft.listComponents()
+print(spacecraft.getComponents()[4].exposedArea())
 
