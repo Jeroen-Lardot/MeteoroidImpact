@@ -5,7 +5,7 @@ class DamageModel:
     # integral A(m) f(m) dm, where A(m) is given by __areaDamagePerMass
     def areaDamageRate(self, component, environment):
         # Particles which do not penetrate the material and leave a crater:
-        A1 = [np.pi*self.diameterHole(component.getThickness(), component.getMaterial(), environment.getVelocities()[i], environment.getDiameters()[i], environment.getDensities()[i])**2 for i in range(len(environment.getMasses()))] # the area a particle of mass m would damage
+        A1 = [np.pi*self.diameterHole(component.getThickness(), component.getMaterial(), environment.getVelocities()[i], environment.getDiameters()[i]/100, environment.getDensities()[i])**2 for i in range(len(environment.getMasses()))] # the area a particle of mass m would damage
         perforationIntegral = 0
         for i in range(len(environment.getMasses())-1):
             perforationIntegral =+ A1[i]*environment.getFluxes()[i]* (environment.getMasses()[i+1]-environment.getMasses()[i])

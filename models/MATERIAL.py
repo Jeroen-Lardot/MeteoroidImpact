@@ -3,6 +3,7 @@ from enum import Enum, auto
 class MATERIAL(Enum):
     ALUMINIUM = "Al"
     CARBONFIBER = "CF"
+    IRON = "Fe"
 
     #returns material density in g/cm^3
     def getDensity(self):
