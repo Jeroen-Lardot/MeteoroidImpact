@@ -36,6 +36,10 @@ df = pd.read_excel('models/Distribution.xlsx', sheet_name='Sheet1', names=["velo
 distribution = choices(df["velocity"], df["probability"],k=10**6)
 arrays = dict(Counter(distribution))
 average = sum(distribution)/10**6
+print(len(environment.getMasses()))
+x = np.linspace(1,182,181)
+plt.plot(np.log(environment.getMasses()),environment.getVelocities(),'b.')
+plt.show()
 
 plt.plot(arrays.keys(), arrays.values(), "b.", label ="Average: "+str(average)+"km/s")
 plt.ylabel("Counts")

@@ -2,8 +2,11 @@ import numpy as np
 
 class DamageModel:
 
+    def areaDamageRate(self):
+        return self.areaPerforation + self.areaDamagePartial
+
     # integral A(m) f(m) dm, where A(m) is given by __areaDamagePerMass
-    def areaDamageRate(self, component, environment):
+    def areaDamagePerforation(self, component, environment):
         # Particles which do not penetrate the material and leave a crater:
         A1 = [np.pi*self.diameterHole(component.getThickness(), component.getMaterial(), environment.getVelocities()[i], environment.getDiameters()[i]/100, environment.getDensities()[i])**2 for i in range(len(environment.getMasses()))] # the area a particle of mass m would damage
         perforationIntegral = 0
@@ -11,8 +14,10 @@ class DamageModel:
             perforationIntegral =+ A1[i]*environment.getFluxes()[i]* (environment.getMasses()[i+1]-environment.getMasses()[i])
 
         # Particles which do penetrate the material and leave a hole:
-
         return perforationIntegral
+
+    def areaDamagePartial(self):
+        return 0;
 
     # Gives the damaged surface area by a particle of mass m and velocity V, given surface properties
     def areaDamagePerMass(self, mass, particleVelocity, surfaceDensity, surfaceDiameter):
@@ -33,3 +38,6 @@ class DamageModel:
 
     def diameterCrater(self, material, density, diameter, velocity):
         return 1.12 * 10 ** (-4) * material.getDensity ** (-0.5) * density ** 0.743 * diameter ** 1.076 * velocity ** 0.727
+
+    def volumeEjectionRate(self):
+        return 0;

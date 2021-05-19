@@ -33,6 +33,7 @@ class VELOCITY(Enum):
 # Defining methods
     def Taylor(self):
         df = pd.read_excel('models/Distribution.xlsx', sheet_name='Sheet1', names=["velocity", "probability"])
+        print(df)
         return choices(df["velocity"], df["probability"])[0]
 
 

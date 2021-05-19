@@ -33,4 +33,10 @@ class Spacecraft:
         return sum(component.exposedArea() for component in self.components)
 
     def getAreaDamageRates(self):
-        return [self.damageModel.areaDamageRate(component, self.environment) for component in self.components]
+        return [self.damageModel.areaDamagePerforation(component, self.environment) for component in self.components]
+
+    def getPerforationDamageRate(self):
+        return self.damageModel.areaDamagePerforation()
+
+    def getSuperficialDamageRate(self):
+        return self.damageModel.areaDamagePartial()
