@@ -22,16 +22,23 @@ spacecraft.addConalBoom(MATERIAL.CARBONFIBER, 0.01095, 0.050, 0.003, 0.9)
 spacecraft.addStraightBoom(MATERIAL.CARBONFIBER, 0.01095, 0.003, 0.9)
 
 # List spacecraft components and total exposed area
-print(spacecraft.getComponentNames())
-print(spacecraft.getExposedArea(), "m^2")
-print(environment.getVelocities())
-print(spacecraft.getAreaDamageRates())
+#print(spacecraft.getComponentNames())
+#print(spacecraft.getExposedArea(), "m^2")
+#print(environment.getVelocities())
+#print(spacecraft.getAreaDamageRates())
 
 
 
-velocities = (np.sort(environment.getVelocities()))
+#velocities = (np.sort(environment.getVelocities()))
 #array = dict(Counter(velocities))
 
+print("Perforation: {}".format(spacecraft.getPerforationDamageRate()))
+print("Total: {}".format(spacecraft.getTotalDamageRates()))
+print("Crater: {}".format(spacecraft.getCraterDamageRate()))
+print("Conchoidal: {}".format(spacecraft.getConchoidalDamageRate()))
+print("Average penetration depth: {}".format(spacecraft.getAveragePenetrationDepth()))
+
+"""
 df = pd.read_excel('models/Distribution.xlsx', sheet_name='Sheet1', names=["velocity", "probability"])
 distribution = choices(df["velocity"], df["probability"],k=10**6)
 arrays = dict(Counter(distribution))
@@ -47,3 +54,4 @@ plt.xlabel("Velocity (km/s)")
 plt.title("Taylor velocity model")
 plt.legend()
 plt.show()
+"""

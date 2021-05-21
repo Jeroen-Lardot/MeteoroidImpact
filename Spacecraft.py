@@ -32,11 +32,18 @@ class Spacecraft:
     def getExposedArea(self):
         return sum(component.exposedArea() for component in self.components)
 
-    def getAreaDamageRates(self):
-        return [self.damageModel.areaDamagePerforation(component, self.environment) for component in self.components]
-
+    # gives total damage area
+    def getTotalDamageRates(self):
+        return [self.damageModel.areaDamageTotal(component, self.environment) for component in self.components]
+    # gives area which is perforated
     def getPerforationDamageRate(self):
-        return self.damageModel.areaDamagePerforation()
-
-    def getSuperficialDamageRate(self):
-        return self.damageModel.areaDamagePartial()
+        return [self.damageModel.areaDamagePerforation(component, self.environment) for component in self.components]
+    #gives area by craters
+    def getCraterDamageRate(self):
+        return [self.damageModel.areaDamageCrater(component, self.environment) for component in self.components]
+    #gives area by conchoidal
+    def getConchoidalDamageRate(self):
+        return [self.damageModel.areaDamageConchoidal(component, self.environment) for component in self.components]
+    
+    def getAveragePenetrationDepth(self):
+        return [self.damageModel.averagePenetrationDepth(component, self.environment) for component in self.components]

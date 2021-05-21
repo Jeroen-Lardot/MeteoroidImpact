@@ -11,6 +11,8 @@ class VELOCITY(Enum):
     RANDOM = auto()
 
     def getVelocity(self, mass):
+        return self.Taylor()
+        """
         if (self == VELOCITY.LOGARITHMIC):
             return self.velocityModel(mass)
 
@@ -19,7 +21,7 @@ class VELOCITY(Enum):
 
         if (self == VELOCITY.TAYLOR):
             return self.Taylor()
-
+        """
 
 
 
@@ -33,8 +35,8 @@ class VELOCITY(Enum):
 # Defining methods
     def Taylor(self):
         df = pd.read_excel('models/Distribution.xlsx', sheet_name='Sheet1', names=["velocity", "probability"])
-        print(df)
-        return choices(df["velocity"], df["probability"])[0]
+        #print(df)
+        return df
 
 
     def velocityModel(self, mass):

@@ -20,7 +20,7 @@ class Environment:
         return self.dataExtraction.getIndividualFluxes()
 
     def getVelocities(self):
-        return self.velocities
+        return self.velocityModel.getVelocity(1)
 
     # Method uses the velocity model to calculate an array of velocities for every mass
     def __calculateVelocities(self):
