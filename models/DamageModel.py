@@ -2,12 +2,16 @@ import numpy as np
 from scipy.integrate import simps
 #from models.DataExtraction import DataExtraction
 #from models.VELOCITY import VELOCITY
+perforation = 0
 
 class DamageModel:
 
     def areaDamageTotal(self, component, environment):
         AA, DIAM, masses, velocities = self.areaDamageIntegral(component, environment, "Total")
         totalDamage = simps([simps(AA_mass,masses) for AA_mass in AA], velocities) 
+        global perforation
+        print(perforation)
+        perforation = 0
         return totalDamage
     
     def areaDamagePerforation(self, component, environment):            
@@ -35,6 +39,7 @@ class DamageModel:
     # Returns the area and other arrays cnecessary to calculate the integral:
     # damageType: 'Total', 'Holes', 'Crater', 'Conchoidal'
     def areaDamageIntegral(self, component, environment, damageType):        
+        
         # Get velocity/ flux distribution
         velocities = environment.getVelocities()["velocity"]*1000 #gives velocities in km/s
         velocityDistribution = environment.getVelocities()["probability"] #dimensionless probability function
@@ -83,11 +88,12 @@ class DamageModel:
     def AreaDamage(self, component, mass, particleVelocity, diameter, density, damageType):
         # critical diamater determining wether a  hole is formed or not
         diameter_crit = self.__criticalDiameter(component.getThickness(), density, particleVelocity)
-        #print(diameter_crit)
-
         if damageType=="Total":
             if (diameter >= diameter_crit):
+                print("hit")
                 A_hole = np.pi*(self.diameterHole(component.getThickness(), component.getMaterial(), particleVelocity, diameter, density)/2)**2  # the area a particle of mass m and velocity v would damage
+                global perforation
+                perforation +=1
                 return A_hole
             else:
                 A_conchoidal = np.pi*(self.diameterConchoidal(component.getMaterial(), density, diameter, particleVelocity)/2)**2
@@ -130,7 +136,7 @@ class DamageModel:
     # surface diameter (micrometer) will be completely penetrated by a particle of density (g/cm3) and velocity (km/s)
     # Local conversion from SI to CGS and returns back a SI unit
     def __criticalDiameter(self, surfaceDiameter, particleDensity, particleVelocity):
-        return 10**6*(surfaceDiameter*10**-6 / (0.65*(particleDensity/1000) ** (0.52) * (particleVelocity/1000) ** (0.875)))**(1/1.056)
+        return 10**-6*(surfaceDiameter*10**6 / (0.65*(particleDensity/1000) ** (0.52) * (particleVelocity/1000) ** (0.875)))**(1/1.056)
 
     #returns the diameter of the hole created by penetrating particles
     def diameterHole(self, thickness, material, velocity, diameter, density):
