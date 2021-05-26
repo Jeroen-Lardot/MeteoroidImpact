@@ -36,7 +36,8 @@ print("Perforation: {}".format(spacecraft.getPerforationDamageRate()))
 print("Total: {}".format(spacecraft.getTotalDamageRates()))
 print("Crater: {}".format(spacecraft.getCraterDamageRate()))
 print("Conchoidal: {}".format(spacecraft.getConchoidalDamageRate()))
-print("Average penetration depth: {}".format(spacecraft.getAveragePenetrationDepth()))
+depth = 1*10**-6 #in meters
+print("Area damaged up to {:.3f} micrometers: {}".format(depth*10**6, spacecraft.getAreaDamageUpToDepth(depth))) #depth in meters
 print("Average degradation liftetime (yr): {}".format([1/((365*24*3600)*ADR) for ADR in spacecraft.getTotalDamageRates()]))
 
 """

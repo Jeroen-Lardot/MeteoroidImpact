@@ -29,10 +29,18 @@ class DamageModel:
         totalDamage = simps([simps(AA_mass,masses) for AA_mass in AA], velocities) 
         return totalDamage
     
-    def averagePenetrationDepth(self, component, environment):
+    def areaDamageUpToDepth(self, component, environment, depth):
         AA, DIAM, masses, velocities = self.areaDamageIntegral(component, environment, "Crater")
-        averagePenetrationDepth = simps([simps(DIAM_mass,masses) for DIAM_mass in DIAM], velocities) 
-        return averagePenetrationDepth
+        for i in range(len(DIAM)):
+            for j in range(len(DIAM[0])):
+                # If the crater is bigger than the depth, set its contribution to zero
+                if DIAM[i][j]/2 > depth:
+                    AA[i][j] = 0
+
+        areadamageUpToDepth = simps([simps(AA_mass,masses) for AA_mass in AA], velocities) 
+        return areadamageUpToDepth
+    
+        
         
         
         
@@ -90,7 +98,7 @@ class DamageModel:
         diameter_crit = self.__criticalDiameter(component.getThickness(), density, particleVelocity)
         if damageType=="Total":
             if (diameter >= diameter_crit):
-                print("hit")
+                #print("hit")
                 A_hole = np.pi*(self.diameterHole(component.getThickness(), component.getMaterial(), particleVelocity, diameter, density)/2)**2  # the area a particle of mass m and velocity v would damage
                 global perforation
                 perforation +=1
