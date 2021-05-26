@@ -36,16 +36,16 @@ class DamageModel:
     # damageType: 'Total', 'Holes', 'Crater', 'Conchoidal'
     def areaDamageIntegral(self, component, environment, damageType):        
         # Get velocity/ flux distribution
-        velocities = environment.getVelocities()["velocity"]
-        velocityDistribution = environment.getVelocities()["probability"]
+        velocities = environment.getVelocities()["velocity"]*1000 #gives velocities in km/s
+        velocityDistribution = environment.getVelocities()["probability"] #dimensionless probability function
         
-        masses = environment.dataExtraction.getMasses()
-        IndividualFluxes = environment.dataExtraction.getIndividualFluxes()
+        masses = [mass*0.01 for mass in environment.getMasses()] #gives masses in gram
+        IndividualFluxes = [flux for flux in environment.getFluxes()] #gives flux in 1/(m^2 * yr)
         
         # Get diameters and densities for the particles
         
-        diameters = environment.dataExtraction.getDiameters()
-        densities = environment.dataExtraction.getDensities()
+        diameters = [diameter*0.01 for diameter in environment.getDiameters()] # gives diameters in cm
+        densities = [density*1000 for density in environment.getDensities()] # gives densities in g/cm^-3
 
         # Make a meshgrid with the frequency of masses in MF and of velocities in VF
         MF, VF = np.meshgrid(IndividualFluxes, velocityDistribution)
@@ -83,6 +83,7 @@ class DamageModel:
     def AreaDamage(self, component, mass, particleVelocity, diameter, density, damageType):
         # critical diamater determining wether a  hole is formed or not
         diameter_crit = self.__criticalDiameter(component.getThickness(), density, particleVelocity)
+        #print(diameter_crit)
 
         if damageType=="Total":
             if (diameter >= diameter_crit):
@@ -128,7 +129,7 @@ class DamageModel:
     # Returns the marginal diameter (micrometer) of the impacting particle at which point the
     # surface diameter (micrometer) will be completely penetrated by a particle of density (g/cm3) and velocity (km/s)
     def __criticalDiameter(self, surfaceDiameter, particleDensity, particleVelocity):
-        return (surfaceDiameter / (0.65*particleDensity ** (0.52) * particleVelocity ** (0.875)))**(1/1.056)
+        return 10**6*(surfaceDiameter*10**-6 / (0.65*(particleDensity/1000) ** (0.52) * (particleVelocity/1000) ** (0.875)))**(1/1.056)
 
     #returns the diameter of the hole created by penetrating particles
     def diameterHole(self, thickness, material, velocity, diameter, density):

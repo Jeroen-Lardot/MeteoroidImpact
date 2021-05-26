@@ -26,7 +26,7 @@ class Environment:
     def __calculateVelocities(self):
         particleVelocities = []
         for mass in self.dataExtraction.getMasses():
-            particleVelocities.append(self.velocityModel.getVelocity(mass))
+            particleVelocities.append(self.velocityModel.getVelocity(mass)) #gives the particle velocities in km/s
         return particleVelocities
 
 

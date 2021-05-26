@@ -14,10 +14,10 @@ environment = Environment("models/spenvisdata.csv", VELOCITY.TAYLOR)
 spacecraft = Spacecraft(environment)
 
 # Add components to spacecraft.
-spacecraft.addProbe(MATERIAL.ALUMINIUM, 0.040, 0.003)
-spacecraft.addProbe(MATERIAL.ALUMINIUM, 0.040, 0.003)
-spacecraft.addGuard(MATERIAL.CARBONFIBER, 0.016, 0.003, 0.1)
-spacecraft.addGuard(MATERIAL.CARBONFIBER, 0.016, 0.003, 0.1)
+spacecraft.addProbe(MATERIAL.ALUMINIUM, 0.040, 0.0003)
+spacecraft.addProbe(MATERIAL.ALUMINIUM, 0.040, 0.0003)
+spacecraft.addGuard(MATERIAL.CARBONFIBER, 0.016, 0.0003, 0.1)
+spacecraft.addGuard(MATERIAL.CARBONFIBER, 0.016, 0.0003, 0.1)
 spacecraft.addConalBoom(MATERIAL.CARBONFIBER, 0.01095, 0.050, 0.003, 0.9)
 spacecraft.addStraightBoom(MATERIAL.CARBONFIBER, 0.01095, 0.003, 0.9)
 
@@ -37,6 +37,7 @@ print("Total: {}".format(spacecraft.getTotalDamageRates()))
 print("Crater: {}".format(spacecraft.getCraterDamageRate()))
 print("Conchoidal: {}".format(spacecraft.getConchoidalDamageRate()))
 print("Average penetration depth: {}".format(spacecraft.getAveragePenetrationDepth()))
+print("Average degradation liftetime (yr): {}".format([1/((365*24*3600)*ADR) for ADR in spacecraft.getTotalDamageRates()]))
 
 """
 df = pd.read_excel('models/Distribution.xlsx', sheet_name='Sheet1', names=["velocity", "probability"])
