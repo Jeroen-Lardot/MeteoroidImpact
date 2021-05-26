@@ -1,17 +1,21 @@
 import numpy as np
 from scipy.integrate import simps
+import matplotlib.pyplot as plt
 #from models.DataExtraction import DataExtraction
 #from models.VELOCITY import VELOCITY
 perforation = 0
+plot =0
 
 class DamageModel:
 
     def areaDamageTotal(self, component, environment):
         AA, DIAM, masses, velocities = self.areaDamageIntegral(component, environment, "Total")
         totalDamage = simps([simps(AA_mass,masses) for AA_mass in AA], velocities) 
+        
         global perforation
-        print(perforation)
+        #print(perforation)
         perforation = 0
+        
         return totalDamage
     
     def areaDamagePerforation(self, component, environment):            
@@ -66,11 +70,20 @@ class DamageModel:
         # We multiply every element of MF with VF to get an array with all the frequencies
         # which correspond to a certain mass and velocity
         FF = np.multiply(MF, VF)
+        
+        global plot
+        # returns a plot showing the frequency weights for each mass/velocity tuple (logscale)
+        if plot==0:
+            fig = plt.figure()
+            plt.imshow(np.log10(FF))
+            plt.colorbar()
+            plot+=1
+            
         array_shape = np.shape(FF)
-
+        
         AA_flat = np.zeros(len(IndividualFluxes)*len(velocityDistribution))
         DIAM_flat = np.zeros(len(IndividualFluxes)*len(velocityDistribution))
-
+        
         i=0
         for velocity in velocities:
             for mass in masses:
@@ -85,7 +98,14 @@ class DamageModel:
         # value of mass and velocity and this is weighted with the frequencies FF
         AA = np.multiply(AA_flat.reshape(array_shape),FF)
         DIAM = np.multiply(DIAM_flat.reshape(array_shape),FF)
-
+        
+        #Returns a plot whith logscale the damages area that mass (on plot only labeled 1-181) and velocity(0-70 km/s) produces
+        if damageType=="Crater" and plot==1:# or 'Crater' or 'Total' ...
+            fig = plt.figure()
+            plt.imshow(np.log10(AA))
+            plt.colorbar()
+            plot+=1
+            
         return [AA, DIAM, masses, velocities]
       
     
@@ -102,6 +122,7 @@ class DamageModel:
                 A_hole = np.pi*(self.diameterHole(component.getThickness(), component.getMaterial(), particleVelocity, diameter, density)/2)**2  # the area a particle of mass m and velocity v would damage
                 global perforation
                 perforation +=1
+                #print(diameter_crit, diameter, particleVelocity)
                 return A_hole
             else:
                 A_conchoidal = np.pi*(self.diameterConchoidal(component.getMaterial(), density, diameter, particleVelocity)/2)**2
