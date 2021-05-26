@@ -5,14 +5,14 @@ class MATERIAL(Enum):
     CARBONFIBER = "CF"
     IRON = "Fe"
 
-    #returns material density in g/cm^3
+    #returns material density in kg/m^3
     def getDensity(self):
         if self == MATERIAL.ALUMINIUM:
             return 2700
         if self == MATERIAL.CARBONFIBER:
             return 2000
 
-    #returns speed of sound in km/s
+    #returns speed of sound in m/s
     def getSpeedOfSound(self):
         if self == MATERIAL.ALUMINIUM:
             return 6420

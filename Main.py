@@ -18,8 +18,8 @@ spacecraft.addProbe(MATERIAL.ALUMINIUM, 0.040, 0.0003)
 spacecraft.addProbe(MATERIAL.ALUMINIUM, 0.040, 0.0003)
 spacecraft.addGuard(MATERIAL.CARBONFIBER, 0.016, 0.0003, 0.1)
 spacecraft.addGuard(MATERIAL.CARBONFIBER, 0.016, 0.0003, 0.1)
-spacecraft.addConalBoom(MATERIAL.CARBONFIBER, 0.01095, 0.050, 0.003, 0.9)
-spacecraft.addStraightBoom(MATERIAL.CARBONFIBER, 0.01095, 0.003, 0.9)
+spacecraft.addConalBoom(MATERIAL.CARBONFIBER, 0.01095, 0.050, 0.0003, 0.9)
+spacecraft.addStraightBoom(MATERIAL.CARBONFIBER, 0.01095, 0.0003, 0.9)
 
 # List spacecraft components and total exposed area
 #print(spacecraft.getComponentNames())

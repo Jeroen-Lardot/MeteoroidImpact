@@ -39,7 +39,7 @@ class DamageModel:
         velocities = environment.getVelocities()["velocity"]*1000 #gives velocities in km/s
         velocityDistribution = environment.getVelocities()["probability"] #dimensionless probability function
         
-        masses = [mass*0.01 for mass in environment.getMasses()] #gives masses in gram
+        masses = [mass*0.001 for mass in environment.getMasses()] #gives masses in gram
         IndividualFluxes = [flux for flux in environment.getFluxes()] #gives flux in 1/(m^2 * yr)
         
         # Get diameters and densities for the particles
@@ -87,15 +87,15 @@ class DamageModel:
 
         if damageType=="Total":
             if (diameter >= diameter_crit):
-                A_hole = np.pi*self.diameterHole(component.getThickness(), component.getMaterial(), particleVelocity, diameter, density)**2  # the area a particle of mass m and velocity v would damage
+                A_hole = np.pi*(self.diameterHole(component.getThickness(), component.getMaterial(), particleVelocity, diameter, density)/2)**2  # the area a particle of mass m and velocity v would damage
                 return A_hole
             else:
-                A_conchoidal = np.pi*self.diameterConchoidal(component.getMaterial(), density, diameter, particleVelocity)
+                A_conchoidal = np.pi*(self.diameterConchoidal(component.getMaterial(), density, diameter, particleVelocity)/2)**2
                 return A_conchoidal
         
         elif damageType=="Hole":
             if (diameter >= diameter_crit):
-                A_hole = np.pi*self.diameterHole(component.getThickness(), component.getMaterial(), particleVelocity, diameter, density)**2  # the area a particle of mass m and velocity v would damage
+                A_hole = np.pi*(self.diameterHole(component.getThickness(), component.getMaterial(), particleVelocity, diameter, density)/2)**2  # the area a particle of mass m and velocity v would damage
                 return A_hole
             else:
                 return 0
@@ -105,8 +105,8 @@ class DamageModel:
             if diameter >= diameter_crit:
                 return [0,0]
             else:
-                diameter_crater = self.diameterCrater(component.getMaterial(), density, diameter, particleVelocity)
-                A_crater = np.pi*diameter_crater**2  
+                diameter_crater = (self.diameterCrater(component.getMaterial(), density, diameter, particleVelocity)/2)
+                A_crater = np.pi*diameter_crater**2
                 return [A_crater, diameter_crater]
             
         elif damageType=="Conchoidal":
@@ -114,7 +114,7 @@ class DamageModel:
             if (diameter >= diameter_crit):
                return 0
             else:
-                A_conchoidal = np.pi*self.diameterConchoidal(component.getMaterial(), density, diameter, particleVelocity)
+                A_conchoidal = (np.pi*self.diameterConchoidal(component.getMaterial(), density, diameter, particleVelocity)/2)**2
                 return A_conchoidal
         else:
             print("ERROR: Damagetype must be: 'Total', 'Hole', 'Crater' or 'Conchoidal'")
@@ -128,18 +128,18 @@ class DamageModel:
 
     # Returns the marginal diameter (micrometer) of the impacting particle at which point the
     # surface diameter (micrometer) will be completely penetrated by a particle of density (g/cm3) and velocity (km/s)
+    # Local conversion from SI to CGS and returns back a SI unit
     def __criticalDiameter(self, surfaceDiameter, particleDensity, particleVelocity):
         return 10**6*(surfaceDiameter*10**-6 / (0.65*(particleDensity/1000) ** (0.52) * (particleVelocity/1000) ** (0.875)))**(1/1.056)
 
     #returns the diameter of the hole created by penetrating particles
     def diameterHole(self, thickness, material, velocity, diameter, density):
-        return 3.309 * diameter * (velocity/1)**0.033 * (velocity/material.getSpeedOfSound())**0.298 * (density/material.getDensity())**0.022 * (thickness/diameter)**0.033
+        return 3.309 * diameter * (velocity/4000)**0.033 * (velocity/material.getSpeedOfSound())**0.298 * (density/material.getDensity())**0.022 * (thickness/diameter)**0.359
 
+    #Local conversion from SI to CGS and returns back a SI unit
     def diameterConchoidal(self, material, density, diameter, velocity):
-        return 5*10**(-4) * material.getDensity()**(-0.5) * density**0.784 * diameter**1.076 * velocity**0.727
+        return (5*10**(-4) * (material.getDensity()/1000)**(-0.5) * (density/1000)**0.784 * (diameter*100)**1.076 * (velocity*100)**0.727)/100
 
+    # Local conversion from SI to CGS and returns back a SI unit
     def diameterCrater(self, material, density, diameter, velocity):
-        return 1.12 * 10 ** (-4) * material.getDensity() ** (-0.5) * density ** 0.743 * diameter ** 1.076 * velocity ** 0.727
-
-    def volumeEjectionRate(self):
-        return 0;
+        return (1.12 * 10 ** (-4) * (material.getDensity()/1000) ** (-0.5) * (density/1000) ** 0.743 * (diameter*100) ** 1.076 * (velocity*100) ** 0.727)/100
