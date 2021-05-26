@@ -45,5 +45,6 @@ class Spacecraft:
     def getConchoidalDamageRate(self):
         return [self.damageModel.areaDamageConchoidal(component, self.environment) for component in self.components]
     
-    def getAveragePenetrationDepth(self):
-        return [self.damageModel.averagePenetrationDepth(component, self.environment) for component in self.components]
+    #Gives damaged area up to a certain depth in centimeter
+    def getAverageDamageUpToDepth(self, depth):
+        return [self.damageModel.averageDamageUpToDepth(component, self.environment, depth) for component in self.components]
