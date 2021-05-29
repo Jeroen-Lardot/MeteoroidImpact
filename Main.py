@@ -32,13 +32,30 @@ spacecraft.addStraightBoom(MATERIAL.CARBONFIBER, 0.01095, 0.0003, 0.9)
 #velocities = (np.sort(environment.getVelocities()))
 #array = dict(Counter(velocities))
 
+"""
 print("Perforation: {}".format(spacecraft.getPerforationDamageRate()))
 print("Total: {}".format(spacecraft.getTotalDamageRates()))
 print("Crater: {}".format(spacecraft.getCraterDamageRate()))
 print("Conchoidal: {}".format(spacecraft.getConchoidalDamageRate()))
 depth = 1*10**-6 #in meters
-print("Area damaged up to {:.3f} micrometers: {}".format(depth*10**6, spacecraft.getAreaDamageUpToDepth(depth))) #depth in meters
+print("Area damaged deeper than {:.3f} micrometers: {}".format(depth*10**6, spacecraft.getAreaDamageUpToDepth(depth))) #depth in meters
 print("Average degradation liftetime (yr): {}".format([1/((365*24*3600)*ADR) for ADR in spacecraft.getTotalDamageRates()]))
+print("Average amount of perforations per year: {}".format(spacecraft.getExpectedPerforations()))
+"""
+
+perforations, A_total, AA, CRATERDEPTH = spacecraft.getAndereBoeg()
+
+print([perforations, A_total, AA, CRATERDEPTH])
+craterDepth = [crater[0] for crater in CRATERDEPTH]
+craterVariance = [crater[1] for crater in CRATERDEPTH]
+
+depth = 1*10**-6 # in m
+A_depth = 0
+for i in range(len(craterDepth)):
+    if craterDepth[i] > depth:
+        A_depth += AA[i]
+
+plt.plot(AA)
 
 """
 df = pd.read_excel('models/Distribution.xlsx', sheet_name='Sheet1', names=["velocity", "probability"])

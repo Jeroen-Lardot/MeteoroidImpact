@@ -35,16 +35,26 @@ class Spacecraft:
     # gives total damage area
     def getTotalDamageRates(self):
         return [self.damageModel.areaDamageTotal(component, self.environment) for component in self.components]
-    # gives area which is perforated
+    
+    # Gives area which is perforated
     def getPerforationDamageRate(self):
         return [self.damageModel.areaDamagePerforation(component, self.environment) for component in self.components]
-    #gives area by craters
+    
+    # Gives area by craters
     def getCraterDamageRate(self):
         return [self.damageModel.areaDamageCrater(component, self.environment) for component in self.components]
-    #gives area by conchoidal
+    
+    # Gives area by conchoidal
     def getConchoidalDamageRate(self):
         return [self.damageModel.areaDamageConchoidal(component, self.environment) for component in self.components]
     
     # Gives damaged area up to a certain depth (in meter)
     def getAreaDamageUpToDepth(self, depth):
         return [self.damageModel.areaDamageUpToDepth(component, self.environment, depth) for component in self.components]
+    
+    # Returns the average amount of perforations per year
+    def getExpectedPerforations(self):
+        return [self.damageModel.expectedPerforations(component, self.environment) for component in self.components]
+
+    def getAndereBoeg(self):
+        return self.damageModel.andereBoeg(self.components[0], self.environment)

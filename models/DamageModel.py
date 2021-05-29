@@ -1,54 +1,142 @@
 import numpy as np
+from scipy.integrate import trapz
 from scipy.integrate import simps
+import random
+
 import matplotlib.pyplot as plt
 #from models.DataExtraction import DataExtraction
 #from models.VELOCITY import VELOCITY
-perforation = 0
-plot =0
+plot = 0
 
 class DamageModel:
 
+    def andereBoeg(self, component, environment):
+        # Get velocity/ flux distribution
+        velocities = environment.getVelocities()["velocity"]*1000 #gives velocities in km/s
+        velocityDistribution = environment.getVelocities()["probability"] #dimensionless probability function
+        
+        masses = [mass*0.001 for mass in environment.getMasses()] #gives masses in kg
+        IndividualFluxes = [flux for flux in environment.getFluxes()] #gives flux in 1/(m^2 * yr)
+        
+        # Get diameters and densities for the particles
+        diameters = [diameter*0.01 for diameter in environment.getDiameters()] # gives diameters in m
+        densities = [density*1000 for density in environment.getDensities()] # gives densities in kg/m^-3
+        
+        perforations = 0
+        AA = []
+        CRATERDEPTH = []
+        
+        for f_count in range(len(IndividualFluxes)):
+            N = np.int(IndividualFluxes[f_count]) #amount of particles in this bin
+            print(N)
+            diameter = diameters[f_count]
+            density = densities[f_count]
+            
+            if N >= 1:
+                randomVelocities = np.random.choice(velocities, N, p=velocityDistribution/np.sum(velocityDistribution))
+                craterDepth = []
+            else:
+                a = random.uniform(0, 1)
+                if a <= IndividualFluxes[f_count]:
+                    N_random = 1
+                    craterDepth = []
+                else:
+                    N_random = 0
+                    craterDepth = [[0,0]]
+                randomVelocities = np.random.choice(velocities, N_random, p=velocityDistribution/np.sum(velocityDistribution))
+            
+            A = 0
+            for velocity in randomVelocities:
+                d_c = self.__criticalDiameter(component.getThickness(), density, velocity)
+                if diameter > d_c:
+                    #This mean there will be a perforation
+                    perforations += 1
+                    A += np.pi*(self.diameterHole(component.getThickness(), component.getMaterial(), velocity, diameter, density)/2)**2  # the area a particle of mass m and velocity v would damage
+                else:
+                    diameterCrater = self.diameterCrater(component.getMaterial(), density, diameter, velocity)
+                    craterDepth.append(diameterCrater/2)
+                    A += np.pi*(diameterCrater/2)**2
+                    
+            AA.append(A)
+            CRATERDEPTH.append([np.mean(craterDepth), np.std(craterDepth)])
+
+        A_total = np.sum(AA)
+        return [perforations, A_total, AA, CRATERDEPTH]
+
+
     def areaDamageTotal(self, component, environment):
         AA, DIAM, masses, velocities = self.areaDamageIntegral(component, environment, "Total")
-        totalDamage = simps([simps(AA_mass,masses) for AA_mass in AA], velocities) 
-        
-        global perforation
-        #print(perforation)
-        perforation = 0
-        
+        totalDamage = trapz([trapz(AA_mass,masses) for AA_mass in AA], velocities)         
         return totalDamage
     
     def areaDamagePerforation(self, component, environment):            
         AA, DIAM, masses, velocities = self.areaDamageIntegral(component, environment, "Hole")
-        totalDamage = simps([simps(AA_mass,masses) for AA_mass in AA], velocities) 
+        totalDamage = trapz([trapz(AA_mass,masses) for AA_mass in AA], velocities) 
         return totalDamage
             
     def areaDamageCrater(self, component, environment):
         AA, DIAM, masses, velocities = self.areaDamageIntegral(component, environment, "Crater")
-        totalDamage = simps([simps(AA_mass,masses) for AA_mass in AA], velocities) 
+        totalDamage = trapz([trapz(AA_mass,masses) for AA_mass in AA], velocities) 
         return totalDamage
     
     def areaDamageConchoidal(self, component, environment):
         AA, DIAM, masses, velocities = self.areaDamageIntegral(component, environment, "Conchoidal")
-        totalDamage = simps([simps(AA_mass,masses) for AA_mass in AA], velocities) 
+        totalDamage = trapz([trapz(AA_mass,masses) for AA_mass in AA], velocities) 
         return totalDamage
     
     def areaDamageUpToDepth(self, component, environment, depth):
         AA, DIAM, masses, velocities = self.areaDamageIntegral(component, environment, "Crater")
         for i in range(len(DIAM)):
             for j in range(len(DIAM[0])):
-                # If the crater is bigger than the depth, set its contribution to zero
-                if DIAM[i][j]/2 > depth:
+                # If the crater is smaller than the depth, set its contribution to zero
+                # this way we get the area damaged deeper than depth
+                if DIAM[i][j]/2 < depth:
                     AA[i][j] = 0
 
-        areadamageUpToDepth = simps([simps(AA_mass,masses) for AA_mass in AA], velocities) 
+        areadamageUpToDepth = trapz([trapz(AA_mass,masses) for AA_mass in AA], velocities) 
         return areadamageUpToDepth
     
+    
+    # Simply creates same grid as elsewhere and sets the valu to 1 if there is a perforation and 0 else. 
+    # Then multiply with FF to get frequencies and add it all up
+    def expectedPerforations(self, component, environment):
+        # Get velocity/ flux distribution
+        velocities = environment.getVelocities()["velocity"]*1000 #gives velocities in km/s
+        velocityDistribution = environment.getVelocities()["probability"] #dimensionless probability function
         
+        masses = [mass*0.001 for mass in environment.getMasses()] #gives masses in gram
+        IndividualFluxes = [flux for flux in environment.getFluxes()] #gives flux in 1/(m^2 * yr)
         
+        # Get diameters and densities for the particles
         
+        diameters = [diameter*0.01 for diameter in environment.getDiameters()] # gives diameters in cm
+        densities = [density*1000 for density in environment.getDensities()] # gives densities in g/cm^-3
+
+        # Make a meshgrid with the frequency of masses in MF and of velocities in VF
+        MF, VF = np.meshgrid(IndividualFluxes, velocityDistribution)
         
-    # Returns the area and other arrays cnecessary to calculate the integral:
+        # We multiply every element of MF with VF to get an array with all the frequencies
+        # which correspond to a certain mass and velocity
+        FF = np.multiply(MF, VF)
+        array_shape = np.shape(FF)
+
+        # An array which will be one when the diameter is larger than d_crit and 0 if it is smaller
+        diamBoolean_flat = np.zeros(len(IndividualFluxes)*len(velocityDistribution))
+
+        i=0
+        for velocity in velocities:
+            for diameter in diameters:
+                if diameter > self.__criticalDiameter(component.getThickness(), densities[i%len(diameters)], velocity):
+                   diamBoolean_flat[i] = 1 
+                i += 1
+                
+        diamBoolean = diamBoolean_flat.reshape(array_shape)
+        frequencyPerforations = diamBoolean*FF
+        return trapz([trapz(freq,masses) for freq in frequencyPerforations], velocities)
+
+    
+        
+    # Returns the area and other arrays necessary to calculate the integral:
     # damageType: 'Total', 'Holes', 'Crater', 'Conchoidal'
     def areaDamageIntegral(self, component, environment, damageType):        
         
@@ -70,15 +158,6 @@ class DamageModel:
         # We multiply every element of MF with VF to get an array with all the frequencies
         # which correspond to a certain mass and velocity
         FF = np.multiply(MF, VF)
-        
-        global plot
-        # returns a plot showing the frequency weights for each mass/velocity tuple (logscale)
-        if plot==0:
-            fig = plt.figure()
-            plt.imshow(np.log10(FF))
-            plt.colorbar()
-            plot+=1
-            
         array_shape = np.shape(FF)
         
         AA_flat = np.zeros(len(IndividualFluxes)*len(velocityDistribution))
@@ -97,15 +176,10 @@ class DamageModel:
         # Create an array AA with the area damage corresponding to that 
         # value of mass and velocity and this is weighted with the frequencies FF
         AA = np.multiply(AA_flat.reshape(array_shape),FF)
-        DIAM = np.multiply(DIAM_flat.reshape(array_shape),FF)
+        DIAM = np.multiply(DIAM_flat.reshape(array_shape),FF)   
         
-        #Returns a plot whith logscale the damages area that mass (on plot only labeled 1-181) and velocity(0-70 km/s) produces
-        if damageType=="Crater" and plot==1:# or 'Crater' or 'Total' ...
-            fig = plt.figure()
-            plt.imshow(np.log10(AA))
-            plt.colorbar()
-            plot+=1
-            
+        print(trapz([trapz(f,masses) for f in FF], velocities))      
+
         return [AA, DIAM, masses, velocities]
       
     
@@ -120,9 +194,6 @@ class DamageModel:
             if (diameter >= diameter_crit):
                 #print("hit")
                 A_hole = np.pi*(self.diameterHole(component.getThickness(), component.getMaterial(), particleVelocity, diameter, density)/2)**2  # the area a particle of mass m and velocity v would damage
-                global perforation
-                perforation +=1
-                #print(diameter_crit, diameter, particleVelocity)
                 return A_hole
             else:
                 A_conchoidal = np.pi*(self.diameterConchoidal(component.getMaterial(), density, diameter, particleVelocity)/2)**2
@@ -130,7 +201,7 @@ class DamageModel:
         
         elif damageType=="Hole":
             if (diameter >= diameter_crit):
-                A_hole = np.pi*(self.diameterHole(component.getThickness(), component.getMaterial(), particleVelocity, diameter, density)/2)**2  # the area a particle of mass m and velocity v would damage
+                A_hole = np.pi*(self.diameterHole(component.getThickness(), component.getMaterial(), particleVelocity, diameter, density)/2)**2  # the area a particle of mass m and velocity v would damage      
                 return A_hole
             else:
                 return 0
@@ -138,10 +209,10 @@ class DamageModel:
         elif damageType=="Crater":
             # Dont count damage where there is perforation
             if diameter >= diameter_crit:
-                return [0,0]
+                return [0,self.diameterHole(component.getThickness(), component.getMaterial(), particleVelocity, diameter, density)]
             else:
-                diameter_crater = (self.diameterCrater(component.getMaterial(), density, diameter, particleVelocity)/2)
-                A_crater = np.pi*diameter_crater**2
+                diameter_crater = self.diameterCrater(component.getMaterial(), density, diameter, particleVelocity)
+                A_crater = np.pi*(diameter_crater/2)**2
                 return [A_crater, diameter_crater]
             
         elif damageType=="Conchoidal":

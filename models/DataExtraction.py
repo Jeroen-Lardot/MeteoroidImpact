@@ -1,4 +1,6 @@
 import pandas as pd
+from scipy.integrate import trapz
+import numpy as np
 
 class DataExtraction:
     def __init__(self, path):
@@ -24,10 +26,10 @@ class DataExtraction:
     # Method calculates the individual flux for every mass, instead of the cummulative flux
     def __getIndividualFlux(self):
         indFlux = []
-        i = 0
-        for i in range(len(self.getFluxes())-1):
-            indFlux.append(self.getFluxes()[i]-self.getFluxes()[i+1])
-        indFlux.append(self.getFluxes()[len(self.getFluxes())-1])
+        i = 0    
+        indFlux = -np.diff(self.getFluxes())
+        np.append(indFlux, self.getFluxes()[len(self.getFluxes())-1])
+        
         return indFlux
 
     # Method calculates the total amount of impacts for a certain area (m^2) and time span (yr), for a certain mass range
