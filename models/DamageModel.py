@@ -5,47 +5,62 @@ import random
 
 import matplotlib.pyplot as plt
 #from models.DataExtraction import DataExtraction
-#from models.VELOCITY import VELOCITY
-plot = 0
+from models.VELOCITY import VELOCITY
+from Environment import Environment
+import time
+from scipy import stats
+import concurrent.futures
+import scipy.interpolate as interpolate
+from collections import Counter
 
 class DamageModel:
+    def __init__(self):
+        environment = Environment("models/spenvisdata.csv", VELOCITY.TAYLOR)
+        self.velocities = environment.getVelocities()["velocity"]*1000  # gives velocities in km/s
+        self.velocityDistribution = environment.getVelocities()["probability"]  # dimensionless probability function
+
+        self.masses = [mass * 0.001 for mass in environment.getMasses()]  # gives masses in kg
+        self.IndividualFluxes = [flux for flux in environment.getFluxes()]  # gives flux in 1/(m^2 * yr)
+        # Get diameters and densities for the particles
+        self.diameters = [diameter * 0.01 for diameter in environment.getDiameters()]  # gives diameters in m
+        self.densities = [density * 1000 for density in environment.getDensities()]  # gives densities in kg/m^-3
+
 
     def andereBoeg(self, component, environment):
-        # Get velocity/ flux distribution
-        velocities = environment.getVelocities()["velocity"]*1000 #gives velocities in km/s
-        velocityDistribution = environment.getVelocities()["probability"] #dimensionless probability function
-        
-        masses = [mass*0.001 for mass in environment.getMasses()] #gives masses in kg
-        IndividualFluxes = [flux for flux in environment.getFluxes()] #gives flux in 1/(m^2 * yr)
-        
-        # Get diameters and densities for the particles
-        diameters = [diameter*0.01 for diameter in environment.getDiameters()] # gives diameters in m
-        densities = [density*1000 for density in environment.getDensities()] # gives densities in kg/m^-3
-        
-        perforations = 0
+        begin = time.perf_counter()
+
         AA = []
         CRATERDEPTH = []
-        
-        for f_count in range(len(IndividualFluxes)):
-            N = np.int(IndividualFluxes[f_count]) #amount of particles in this bin
-            print(N)
-            diameter = diameters[f_count]
-            density = densities[f_count]
-            
+
+        looptime = []
+        counts = []
+        perforations = 0
+        for f_count in range(len(self.IndividualFluxes)):
+
+            N = np.int(self.IndividualFluxes[f_count]) #amount of particles in this bin
+            diameter = self.diameters[f_count]
+            density = self.densities[f_count]
+
             if N >= 1:
-                randomVelocities = np.random.choice(velocities, N, p=velocityDistribution/np.sum(velocityDistribution))
+                randomVelocities = np.random.choice(self.velocities, N,
+                                                    p=self.velocityDistribution / np.sum(self.velocityDistribution))
                 craterDepth = []
             else:
                 a = random.uniform(0, 1)
-                if a <= IndividualFluxes[f_count]:
+                if a <= self.IndividualFluxes[f_count]:
                     N_random = 1
                     craterDepth = []
                 else:
                     N_random = 0
-                    craterDepth = [[0,0]]
-                randomVelocities = np.random.choice(velocities, N_random, p=velocityDistribution/np.sum(velocityDistribution))
-            
-            A = 0
+                    craterDepth = [[0, 0]]
+                randomVelocities = np.random.choice(self.velocities, N_random,
+                                                    p=self.velocityDistribution / np.sum(self.velocityDistribution))
+
+
+
+            ### Create a pool of processes. By default, one is created for each CPU in your machine.
+            A=0
+
             for velocity in randomVelocities:
                 d_c = self.__criticalDiameter(component.getThickness(), density, velocity)
                 if diameter > d_c:
@@ -56,11 +71,13 @@ class DamageModel:
                     diameterCrater = self.diameterCrater(component.getMaterial(), density, diameter, velocity)
                     craterDepth.append(diameterCrater/2)
                     A += np.pi*(diameterCrater/2)**2
-                    
+
+
             AA.append(A)
             CRATERDEPTH.append([np.mean(craterDepth), np.std(craterDepth)])
 
         A_total = np.sum(AA)
+
         return [perforations, A_total, AA, CRATERDEPTH]
 
 
@@ -105,7 +122,7 @@ class DamageModel:
         velocityDistribution = environment.getVelocities()["probability"] #dimensionless probability function
         
         masses = [mass*0.001 for mass in environment.getMasses()] #gives masses in gram
-        IndividualFluxes = [flux for flux in environment.getFluxes()] #gives flux in 1/(m^2 * yr)
+        IndividualFluxes = [flux     for flux in environment.getFluxes()] #gives flux in 1/(m^2 * yr)
         
         # Get diameters and densities for the particles
         

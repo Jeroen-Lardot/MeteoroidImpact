@@ -43,9 +43,23 @@ print("Average degradation liftetime (yr): {}".format([1/((365*24*3600)*ADR) for
 print("Average amount of perforations per year: {}".format(spacecraft.getExpectedPerforations()))
 """
 
-perforations, A_total, AA, CRATERDEPTH = spacecraft.getAndereBoeg()
 
-print([perforations, A_total, AA, CRATERDEPTH])
+#Run for every material and its thickness variations
+
+N = 100
+AAtot = np.zeros(140)
+Atot = 0
+perfTot =0
+for i in range(N):
+    perforations, A_total, AA, CRATERDEPTH = spacecraft.getAndereBoeg()
+    AAtot = [sum(x) for x in zip(AAtot, AA)]
+    Atot = Atot+ A_total
+    perfTot = perfTot + perforations
+AAtot = [element/N for element in AAtot]
+Atot = Atot/N
+perfTot/N
+
+print([perforations, Atot, AA, CRATERDEPTH])
 craterDepth = [crater[0] for crater in CRATERDEPTH]
 craterVariance = [crater[1] for crater in CRATERDEPTH]
 
@@ -55,7 +69,15 @@ for i in range(len(craterDepth)):
     if craterDepth[i] > depth:
         A_depth += AA[i]
 
-plt.plot(AA)
+x=[]
+for i in range(len(environment.getMasses())-1):
+    x.append(environment.getMasses()[i])
+
+plt.plot(np.log10(x),AAtot ,"b.")
+plt.show()
+
+df = pd.DataFrame(dict(Mass=x,AreaDamage=AAtot))
+print(df.to_latex(index=False))
 
 """
 df = pd.read_excel('models/Distribution.xlsx', sheet_name='Sheet1', names=["velocity", "probability"])

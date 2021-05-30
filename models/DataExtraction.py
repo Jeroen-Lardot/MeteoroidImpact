@@ -23,7 +23,7 @@ class DataExtraction:
     def getIndividualFluxes(self):
         return self.individualFlux
 
-    # Method calculates the individual flux for every mass, instead of the cummulative flux
+    # Method calculates the individual flux for every mass, instead of the cumulative flux
     def __getIndividualFlux(self):
         indFlux = []
         i = 0    

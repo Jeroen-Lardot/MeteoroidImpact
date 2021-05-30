@@ -17,6 +17,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\models\DataExtraction.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\models\VELOCITY.py">
           <value>
             <Attribute>
