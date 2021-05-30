@@ -63,7 +63,7 @@ Perf_tot =[]
 Perf_area = []
 for i in range(N):
     if i%np.ceil(N/50) ==0:
-        print('progress: {}%'.format(i/N))
+        print('progress: {}%'.format(i/N*100))
     perforations, perforationsArea, A_total, AA, craterDepth = spacecraft.getAndereBoeg()
 
     A_tot.append(A_total)
