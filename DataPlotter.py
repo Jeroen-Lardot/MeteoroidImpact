@@ -17,7 +17,7 @@ densities = [density * 1000 for density in environment.getDensities()][0:140]   
 
 
 # Give specifications of the run
-N = 100
+N = 1000
 materialType = 'ALUMINIUM' # CARBONFIBER / TITANIUM / ALUMINIUM
 thickness = 0.3 # milimeter
 
@@ -44,7 +44,9 @@ perf_MEAN = np.mean(Perf_tot)
 perf_STD = np.std(Perf_tot)
 
 # Set directory where plots will appear
-figDir = 'plots/' + basename
+if not os.path.exists('../plots/'):
+    os.mkdir('../plots/')
+figDir = '../plots/' + basename
 if not os.path.exists(figDir):
     os.mkdir(figDir)
 
