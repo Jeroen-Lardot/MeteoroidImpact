@@ -6,20 +6,27 @@ from Spacecraft import Spacecraft
 from models.MATERIAL import MATERIAL
 from models.VELOCITY import VELOCITY
 from matplotlib import pyplot as plt
+
 import numpy as np
 import pandas as pd
+import os
 
 # Define a new spacecraft in a new environment
 environment = Environment("models/spenvisdata.csv", VELOCITY.TAYLOR)
 spacecraft = Spacecraft(environment)
 
+
+materialType = 'ALUMINIUM' # CARBONFIBER / TITANIUM / ALUMINIUM
+# materialType ook zelf veranderen in spacecraft.addProbe(...)!!!
+thickness = 0.0003 # meter
+
 # Add components to spacecraft.
-spacecraft.addProbe(MATERIAL.CARBONFIBER, 0.040, 0.0003)
-spacecraft.addProbe(MATERIAL.ALUMINIUM, 0.040, 0.0003)
-spacecraft.addGuard(MATERIAL.CARBONFIBER, 0.016, 0.0003, 0.1)
-spacecraft.addGuard(MATERIAL.CARBONFIBER, 0.016, 0.0003, 0.1)
-spacecraft.addConalBoom(MATERIAL.CARBONFIBER, 0.01095, 0.050, 0.0003, 0.9)
-spacecraft.addStraightBoom(MATERIAL.CARBONFIBER, 0.01095, 0.0003, 0.9)
+spacecraft.addProbe(MATERIAL.ALUMINIUM, 0.040, thickness)
+#spacecraft.addProbe(MATERIAL.ALUMINIUM, 0.040, 0.0003)
+#spacecraft.addGuard(MATERIAL.CARBONFIBER, 0.016, 0.0003, 0.1)
+#spacecraft.addGuard(MATERIAL.CARBONFIBER, 0.016, 0.0003, 0.1)
+#spacecraft.addConalBoom(MATERIAL.CARBONFIBER, 0.01095, 0.050, 0.0003, 0.9)
+#spacecraft.addStraightBoom(MATERIAL.CARBONFIBER, 0.01095, 0.0003, 0.9)
 
 # List spacecraft components and total exposed area
 #print(spacecraft.getComponentNames())
@@ -46,38 +53,80 @@ print("Average amount of perforations per year: {}".format(spacecraft.getExpecte
 
 #Run for every material and its thickness variations
 
-N = 2000
-AAtot = np.zeros(140)
-Atot = 0
-perfTot =0
-for i in range(N):
-    perforations, A_total, AA, CRATERDEPTH = spacecraft.getAndereBoeg()
-    AAtot = [sum(x) for x in zip(AAtot, AA)]
-    Atot = Atot+ A_total
-    perfTot = perfTot + perforations
-AAtot = [element/N for element in AAtot]
-Atot = Atot/N
-perfTot = perfTot/N
+N = 1000
 
-print([perfTot, Atot, AAtot, CRATERDEPTH])
-craterDepth = [crater[0] for crater in CRATERDEPTH]
-craterVariance = [crater[1] for crater in CRATERDEPTH]
+AA_tot = [ [] for i in range(140)]
+Crat_tot = [ [] for i in range(140)]
+
+A_tot = []
+Perf_tot =[]
+Perf_area = []
+for i in range(N):
+    if i%np.ceil(N/50) ==0:
+        print('progress: {}%'.format(i/N))
+    perforations, perforationsArea, A_total, AA, craterDepth = spacecraft.getAndereBoeg()
+
+    A_tot.append(A_total)
+    Perf_tot.append(perforations)
+    Perf_area.append(perforationsArea)
+    
+    for k in range(len(AA_tot)):
+        AA_tot[k].append(AA[k])
+        Crat_tot[k].append(craterDepth[k])
+    
+
+print(Crat_tot)
+AA_MEAN = [np.mean(AAtot_bin) for AAtot_bin in AA_tot]
+AA_STD = [np.std(AAtot_bin) for AAtot_bin in AA_tot]
+
+CRAT_MEAN = [np.mean(CratTot_bin) for CratTot_bin in Crat_tot]
+CRAT_STD = [np.std(CratTot_bin) for CratTot_bin in Crat_tot]
+
+
+
+print([Perf_tot, A_tot, AA_tot, craterDepth])
 
 depth = 1*10**-6 # in m
 A_depth = 0
-for i in range(len(craterDepth)):
-    if craterDepth[i] > depth:
-        A_depth += AA[i]
+
+#for i in range(len(CRAT_MEAN)):
+#    if craterDepth[i] > depth:
+#        A_depth += AA[i]
 
 x=[]
 for i in range(len(environment.getMasses())-1):
     x.append(environment.getMasses()[i])
 
-plt.plot(np.log10(x),AAtot ,"b-")
-plt.show()
+#plt.plot(np.log10(x),AA_tot ,"b-")
+#plt.show()
 
-df = pd.DataFrame(dict(Mass=x,AreaDamage=AAtot))
+df = pd.DataFrame(dict(Mass=x,AreaDamage=AA_tot))
 print(df.to_latex(index=False))
+
+
+
+# Save everything to a file
+basename = 'run_{}_{}_{}'.format(N, materialType, thickness*10**3)
+if not os.path.exists('../Simulation_data/'):
+    os.mkdir('../Simulation_data/')
+    
+pathDir = '../Simulation_data/' + basename
+if not os.path.exists(pathDir):
+    os.mkdir(pathDir)
+    
+print(len(A_tot), len(AA_MEAN),len(AA_STD), len(Perf_tot), len(CRAT_MEAN), len(CRAT_STD))
+print(A_tot,Perf_tot)
+
+
+dataPerRun = pd.DataFrame({'A_tot': A_tot, 'Perf_tot': Perf_tot, 'Perf_area': Perf_area})
+
+dataPerBin = pd.DataFrame({'AA_MEAN': AA_MEAN,
+                           'AA_STD': AA_STD,
+                           'CRAT_MEAN': CRAT_MEAN,
+                           'CRAT_STD': CRAT_STD})
+
+dataPerRun.to_csv(pathDir + '/' + 'dataPerRun.csv',sep='\t')
+dataPerBin.to_csv(pathDir + '/' + 'dataPerBin.csv',sep='\t')
 
 """
 df = pd.read_excel('models/Distribution.xlsx', sheet_name='Sheet1', names=["velocity", "probability"])

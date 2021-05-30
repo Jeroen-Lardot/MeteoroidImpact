@@ -35,6 +35,7 @@ class DamageModel:
         looptime = []
         counts = []
         perforations = 0
+        perforationsArea = 0
         for f_count in range(len(self.IndividualFluxes)):
 
             N = np.int(self.IndividualFluxes[f_count]) #amount of particles in this bin
@@ -52,7 +53,7 @@ class DamageModel:
                     craterDepth = []
                 else:
                     N_random = 0
-                    craterDepth = [[0, 0]]
+                    craterDepth = [0]
                 randomVelocities = np.random.choice(self.velocities, N_random,
                                                     p=self.velocityDistribution / np.sum(self.velocityDistribution))
 
@@ -65,9 +66,12 @@ class DamageModel:
                 d_c = self.__criticalDiameter(component.getThickness(), density, velocity)
                 if diameter > d_c:
                     #This mean there will be a perforation
+                    A_perf = np.pi*(self.diameterHole(component.getThickness(), component.getMaterial(), velocity, diameter, density)/2)**2  # the area a particle of mass m and velocity v would damage
+                    A = A + A_perf
+                    
+                    perforationsArea += A_perf
                     perforations += 1
-                    A = A + np.pi*(self.diameterHole(component.getThickness(), component.getMaterial(), velocity, diameter, density)/2)**2  # the area a particle of mass m and velocity v would damage
-
+                    craterDepth = [0]
                 else:
                     conchoidal = self.diameterConchoidal(component.getMaterial(), density, diameter, velocity)
                     diameterCrater = self.diameterCrater(component.getMaterial(), density, diameter, velocity)
@@ -76,11 +80,11 @@ class DamageModel:
 
 
             AA.append(A)
-            CRATERDEPTH.append([np.mean(craterDepth), np.std(craterDepth)])
+            CRATERDEPTH.append(np.mean(craterDepth))
 
         A_total = np.sum(AA)
 
-        return [perforations, A_total, AA, CRATERDEPTH]
+        return [perforations, perforationsArea, A_total, AA, CRATERDEPTH]
 
 
     def areaDamageTotal(self, component, environment):

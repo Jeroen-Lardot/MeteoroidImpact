@@ -10,7 +10,7 @@ class DataExtraction:
 
     def getMasses(self):
         return list(self.df["mass"])
-
+        
     def getDiameters(self):
         return list(self.df["diameter"])
 
