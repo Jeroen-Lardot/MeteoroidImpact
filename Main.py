@@ -14,7 +14,7 @@ environment = Environment("models/spenvisdata.csv", VELOCITY.TAYLOR)
 spacecraft = Spacecraft(environment)
 
 # Add components to spacecraft.
-spacecraft.addProbe(MATERIAL.ALUMINIUM, 0.040, 0.0003)
+spacecraft.addProbe(MATERIAL.CARBONFIBER, 0.040, 0.0003)
 spacecraft.addProbe(MATERIAL.ALUMINIUM, 0.040, 0.0003)
 spacecraft.addGuard(MATERIAL.CARBONFIBER, 0.016, 0.0003, 0.1)
 spacecraft.addGuard(MATERIAL.CARBONFIBER, 0.016, 0.0003, 0.1)
@@ -46,7 +46,7 @@ print("Average amount of perforations per year: {}".format(spacecraft.getExpecte
 
 #Run for every material and its thickness variations
 
-N = 100
+N = 2000
 AAtot = np.zeros(140)
 Atot = 0
 perfTot =0
@@ -57,9 +57,9 @@ for i in range(N):
     perfTot = perfTot + perforations
 AAtot = [element/N for element in AAtot]
 Atot = Atot/N
-perfTot/N
+perfTot = perfTot/N
 
-print([perforations, Atot, AA, CRATERDEPTH])
+print([perfTot, Atot, AAtot, CRATERDEPTH])
 craterDepth = [crater[0] for crater in CRATERDEPTH]
 craterVariance = [crater[1] for crater in CRATERDEPTH]
 
@@ -73,7 +73,7 @@ x=[]
 for i in range(len(environment.getMasses())-1):
     x.append(environment.getMasses()[i])
 
-plt.plot(np.log10(x),AAtot ,"b.")
+plt.plot(np.log10(x),AAtot ,"b-")
 plt.show()
 
 df = pd.DataFrame(dict(Mass=x,AreaDamage=AAtot))

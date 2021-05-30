@@ -66,11 +66,13 @@ class DamageModel:
                 if diameter > d_c:
                     #This mean there will be a perforation
                     perforations += 1
-                    A += np.pi*(self.diameterHole(component.getThickness(), component.getMaterial(), velocity, diameter, density)/2)**2  # the area a particle of mass m and velocity v would damage
+                    A = A + np.pi*(self.diameterHole(component.getThickness(), component.getMaterial(), velocity, diameter, density)/2)**2  # the area a particle of mass m and velocity v would damage
+
                 else:
+                    conchoidal = self.diameterConchoidal(component.getMaterial(), density, diameter, velocity)
                     diameterCrater = self.diameterCrater(component.getMaterial(), density, diameter, velocity)
                     craterDepth.append(diameterCrater/2)
-                    A += np.pi*(diameterCrater/2)**2
+                    A = A + np.pi*(conchoidal/2)**2
 
 
             AA.append(A)
