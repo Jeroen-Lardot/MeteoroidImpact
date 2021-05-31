@@ -46,7 +46,9 @@ perf_MEAN = np.mean(Perf_tot)
 perf_STD = np.std(Perf_tot)
 
 # Set directory where plots will appear
-figDir = 'plots/' + basename
+if not os.path.exists('../plots/'):
+    os.mkdir('../plots/')
+figDir = '../plots/' + basename
 if not os.path.exists(figDir):
     os.mkdir(figDir)
 
@@ -75,7 +77,7 @@ figCRAT_MEAN, ax = plt.subplots()
 ax.scatter(np.log10(masses), CRAT_MEAN, s=10, color=plotColor, label='{}, thickness = {} mm'.format(materialType.lower(), thickness))
 ax.errorbar(np.log10(masses), CRAT_MEAN, yerr = CRAT_STD, ecolor=errorColor, elinewidth=errorThickness, capsize=errorCapsize, fmt='none', marker="none")
 ax.set_xlabel('$\log$ masses (kg)', size= 15)
-ax.set_ylabel('Craterdepth', size= 15)
+ax.set_ylabel('Craterdepth (m)', size= 15)
 ax.grid()
 ax.legend(fontsize= 10)
 
