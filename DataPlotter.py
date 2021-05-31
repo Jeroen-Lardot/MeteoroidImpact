@@ -26,7 +26,6 @@ thickness = 0.3 # milimeter
 basename = 'run_{}_{}_{}'.format(N, materialType, thickness)
 path = '../Simulation_data/' + basename
 
-
 # Retrieve files and data
 dataPerRun = pd.read_csv(path + '/' + 'dataPerRun.csv', header=0, sep='\t')
 dataPerBin = pd.read_csv(path + '/' + 'dataPerBin.csv', header=0, sep='\t')
@@ -39,11 +38,29 @@ AA_MEAN, AA_STD, CRAT_MEAN, CRAT_STD = dataPerBin["AA_MEAN"], dataPerBin["AA_STD
 # The average total damaged area and perforations + their standard deviation
 A_MEAN = np.mean(A_tot)
 A_STD = np.std(A_tot)
-print('Total damage = ${} \pm {}$'.format(A_MEAN, A_STD))
-
+print(r'Total damage = ${} \pm {}$'.format(A_MEAN, A_STD))
 
 perf_MEAN = np.mean(Perf_tot)
 perf_STD = np.std(Perf_tot)
+print(r'Perforations = ${} \pm {}$'.format(perf_MEAN, perf_STD))
+print(r'Perforation Area = ${} \pm {}$'.format(np.mean(Perf_area), np.std(Perf_area)))
+
+# Make craterdepth-profile
+depth_i, depth_f = [-8, -3]
+CRAT_PROFILE = []
+Depths = 10**np.linspace(depth_i,depth_f,1000)
+for depth in Depths:
+    i=0
+    areaDamage = 0
+    for craterDepth in CRAT_MEAN:
+        if craterDepth > depth:
+            areaDamage = areaDamage + AA_MEAN[i]
+        i+=1
+        
+    if thickness*10**-3 > depth:
+        areaDamage = areaDamage + np.mean(Perf_area)
+    CRAT_PROFILE.append(areaDamage)
+
 
 # Set directory where plots will appear
 if not os.path.exists('../plots/'):
@@ -65,7 +82,7 @@ errorCapsize = 0.5
 figAA_MEAN, ax = plt.subplots()
 ax.scatter(np.log10(masses), AA_MEAN, s=10, color=plotColor, label='{}, thickness = {} mm'.format(materialType.lower(), thickness))
 ax.errorbar(np.log10(masses), AA_MEAN, yerr = AA_STD, ecolor=errorColor, elinewidth=errorThickness, capsize=errorCapsize, fmt='none', marker="none")
-ax.set_xlabel('$\log$ masses (kg)', size= 15)
+ax.set_xlabel('$\log$ Masses (kg)', size= 15)
 ax.set_ylabel('Damaged area fraction', size= 15)
 ax.grid()
 ax.legend(fontsize= 10)
@@ -73,16 +90,25 @@ figAA_MEAN.savefig(figDir + '/' + 'AA_MEAN.png', dpi= 400, bbox_inches= 'tight')
 
 # Plot CRAT_MEAN
 figCRAT_MEAN, ax = plt.subplots()
-#ax.plot(np.log10(masses), CRAT_MEAN ,"b-", label='{}, thickness = {} mm'.format(materialType.lower(), thickness))
 ax.scatter(np.log10(masses), CRAT_MEAN, s=10, color=plotColor, label='{}, thickness = {} mm'.format(materialType.lower(), thickness))
 ax.errorbar(np.log10(masses), CRAT_MEAN, yerr = CRAT_STD, ecolor=errorColor, elinewidth=errorThickness, capsize=errorCapsize, fmt='none', marker="none")
-ax.set_xlabel('$\log$ masses (kg)', size= 15)
+ax.set_xlabel('$\log$ Masses (kg)', size= 15)
 ax.set_ylabel('Craterdepth (m)', size= 15)
 ax.grid()
 ax.legend(fontsize= 10)
 
 figCRAT_MEAN.savefig(figDir + '/' + 'CRAT_MEAN.png', dpi= 400, bbox_inches= 'tight') 
 
+# Plot Craterdepth profile
+figCRAT_PROFILE, ax = plt.subplots()
+ax.scatter(np.log10(Depths), CRAT_PROFILE, s=5, color=plotColor, label='{}, thickness = {} mm'.format(materialType.lower(), thickness))
+#ax.errorbar(np.log10(masses), CRAT_MEAN, yerr = CRAT_STD, ecolor=errorColor, elinewidth=errorThickness, capsize=errorCapsize, fmt='none', marker="none")
+ax.set_xlabel('$\log$ Craterdepth (m)', size= 15)
+ax.set_ylabel('Cumulative damaged area fraction', size= 15)
+ax.invert_xaxis()
+ax.grid()
+ax.legend(fontsize= 10)
+figCRAT_PROFILE.savefig(figDir + '/' + 'CRAT_PROFILE.png', dpi= 400, bbox_inches= 'tight') 
 
 plt.show()
 
