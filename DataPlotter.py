@@ -17,7 +17,7 @@ densities = [density * 1000 for density in environment.getDensities()][0:140]   
 
 
 # Give specifications of the run
-N = 100
+N = 1000
 materialType = 'ALUMINIUM' # CARBONFIBER / TITANIUM / ALUMINIUM
 thickness = 0.3 # milimeter
 
@@ -39,6 +39,8 @@ AA_MEAN, AA_STD, CRAT_MEAN, CRAT_STD = dataPerBin["AA_MEAN"], dataPerBin["AA_STD
 # The average total damaged area and perforations + their standard deviation
 A_MEAN = np.mean(A_tot)
 A_STD = np.std(A_tot)
+print('Total damage = ${} \pm {}$'.format(A_MEAN, A_STD))
+
 
 perf_MEAN = np.mean(Perf_tot)
 perf_STD = np.std(Perf_tot)

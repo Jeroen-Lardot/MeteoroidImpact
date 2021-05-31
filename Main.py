@@ -75,7 +75,6 @@ for i in range(N):
         Crat_tot[k].append(craterDepth[k])
     
 
-print(Crat_tot)
 AA_MEAN = [np.mean(AAtot_bin) for AAtot_bin in AA_tot]
 AA_STD = [np.std(AAtot_bin) for AAtot_bin in AA_tot]
 
@@ -84,7 +83,7 @@ CRAT_STD = [np.std(CratTot_bin) for CratTot_bin in Crat_tot]
 
 
 
-print([Perf_tot, A_tot, AA_tot, craterDepth])
+#print([Perf_tot, A_tot, AA_tot, craterDepth])
 
 depth = 1*10**-6 # in m
 A_depth = 0
