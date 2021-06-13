@@ -35,7 +35,7 @@ class DamageModel:
         looptime = []
         counts = []
         perforations = 0
-        perforationsArea = 0
+        perforationsArea = []
         for f_count in range(len(self.IndividualFluxes)):
 
             N = np.int(self.IndividualFluxes[f_count]) #amount of particles in this bin
@@ -69,7 +69,7 @@ class DamageModel:
                     A_perf = np.pi*(self.diameterHole(component.getThickness(), component.getMaterial(), velocity, diameter, density)/2)**2  # the area a particle of mass m and velocity v would damage
                     A = A + A_perf
                     
-                    perforationsArea += A_perf
+                    perforationsArea.append(A_perf)
                     perforations += 1
                     craterDepth = [0]
                 else:
@@ -264,7 +264,7 @@ class DamageModel:
     #returns the diameter of the hole created by penetrating particles
     def diameterHole(self, thickness, material, velocity, diameter, density):
         return 3.309 * diameter * (velocity/4000)**0.033 * (velocity/material.getSpeedOfSound())**0.298 * (density/material.getDensity())**0.022 * (thickness/diameter)**0.359
-
+        
     #Local conversion from SI to CGS and returns back a SI unit
     def diameterConchoidal(self, material, density, diameter, velocity):
         return (5*10**(-4) * (material.getDensity()/1000)**(-0.5) * (density/1000)**0.784 * (diameter*100)**1.076 * (velocity*100)**0.727)/100

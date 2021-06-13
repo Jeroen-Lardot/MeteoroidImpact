@@ -16,12 +16,12 @@ environment = Environment("models/spenvisdata.csv", VELOCITY.TAYLOR)
 spacecraft = Spacecraft(environment)
 
 
-materialType = 'ALUMINIUM' # CARBONFIBER / TITANIUM / ALUMINIUM
+materialType = 'TITANIUM' # CARBONFIBER / TITANIUM / ALUMINIUM
 # materialType ook zelf veranderen in spacecraft.addProbe(...)!!!
-thickness = 0.0003 # meter
+thickness = 0.0003  # meter
 
 # Add components to spacecraft.
-spacecraft.addProbe(MATERIAL.ALUMINIUM, 0.040, thickness)
+spacecraft.addProbe(MATERIAL.TITANIUM, 0.040, thickness)
 #spacecraft.addProbe(MATERIAL.ALUMINIUM, 0.040, 0.0003)
 #spacecraft.addGuard(MATERIAL.CARBONFIBER, 0.016, 0.0003, 0.1)
 #spacecraft.addGuard(MATERIAL.CARBONFIBER, 0.016, 0.0003, 0.1)
@@ -53,7 +53,7 @@ print("Average amount of perforations per year: {}".format(spacecraft.getExpecte
 
 #Run for every material and its thickness variations
 
-N = 1000
+N = 10**2
 
 AA_tot = [ [] for i in range(140)]
 Crat_tot = [ [] for i in range(140)]
@@ -61,6 +61,8 @@ Crat_tot = [ [] for i in range(140)]
 A_tot = []
 Perf_tot =[]
 Perf_area = []
+Perf_max = []
+
 for i in range(N):
     if i%np.ceil(N/50) ==0:
         print('progress: {}%'.format(i/N*100))
@@ -68,7 +70,8 @@ for i in range(N):
 
     A_tot.append(A_total)
     Perf_tot.append(perforations)
-    Perf_area.append(perforationsArea)
+    Perf_area.append(np.sum(perforationsArea))
+    Perf_max.append(np.max(perforationsArea))
     
     for k in range(len(AA_tot)):
         AA_tot[k].append(AA[k])
@@ -102,7 +105,8 @@ for i in range(len(environment.getMasses())-1):
 df = pd.DataFrame(dict(Mass=x,AreaDamage=AA_tot))
 print(df.to_latex(index=False))
 
-
+print("max perforation area") 
+print(Perf_max, Perf_area)
 
 # Save everything to a file
 basename = 'run_{}_{}_{}'.format(N, materialType, thickness*10**3)
@@ -117,7 +121,7 @@ print(len(A_tot), len(AA_MEAN),len(AA_STD), len(Perf_tot), len(CRAT_MEAN), len(C
 print(A_tot,Perf_tot)
 
 
-dataPerRun = pd.DataFrame({'A_tot': A_tot, 'Perf_tot': Perf_tot, 'Perf_area': Perf_area})
+dataPerRun = pd.DataFrame({'A_tot': A_tot, 'Perf_tot': Perf_tot, 'Perf_area': Perf_area, 'Perf_max':Perf_max})
 
 dataPerBin = pd.DataFrame({'AA_MEAN': AA_MEAN,
                            'AA_STD': AA_STD,
