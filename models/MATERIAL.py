@@ -11,7 +11,7 @@ class MATERIAL(Enum):
         if self == MATERIAL.ALUMINIUM:
             return 2700
         if self == MATERIAL.CARBONFIBER:
-            return 2000
+            return 1550
         if self == MATERIAL.TITANIUM:
             return 4506
 
