@@ -6,6 +6,7 @@ class MATERIAL(Enum):
     IRON = "Fe"
     TITANIUM = "Ti"
 
+
     #returns material density in kg/m^3
     def getDensity(self):
         if self == MATERIAL.ALUMINIUM:

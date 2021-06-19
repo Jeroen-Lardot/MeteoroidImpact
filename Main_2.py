@@ -40,6 +40,7 @@ Perf_tot =[]
 Perf_area = []
 Perf_max = []
 
+
 for i in range(N):
     if i%np.ceil(N/50) ==0:
         print('progress: {}%'.format(i/N*100))

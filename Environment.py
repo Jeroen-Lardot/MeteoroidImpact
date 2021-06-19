@@ -6,6 +6,7 @@ class Environment:
         self.dataExtraction = DataExtraction(path)
         self.velocities = self.__calculateVelocities()
 
+
     def getMasses(self):
         return self.dataExtraction.getMasses()
 

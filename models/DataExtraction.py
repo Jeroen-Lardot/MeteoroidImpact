@@ -8,6 +8,7 @@ class DataExtraction:
         self.df = pd.read_csv(path, names=["mass", "diameter", "density", "flux"], header=0)
         self.individualFlux = self.__getIndividualFlux()
 
+
     def getMasses(self):
         return list(self.df["mass"])
         

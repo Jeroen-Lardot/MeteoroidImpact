@@ -29,6 +29,7 @@ class DamageModel:
     def andereBoeg(self, component, environment):
         begin = time.perf_counter()
 
+
         AA = []
         CRATERDEPTH = []
 
