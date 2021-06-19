@@ -10,7 +10,7 @@ import multiprocessing
 from numba import jit,cuda
 
 # Specify variables for the run
-N = 5*10 ** 5
+N = 10 ** 3
 environment = Environment("models/spenvisdata.csv")
 spacecraft = Spacecraft(MATERIAL.ALUMINIUM, 0.0003, environment)
 

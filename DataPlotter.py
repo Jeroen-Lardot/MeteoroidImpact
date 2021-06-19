@@ -1,6 +1,5 @@
 from Environment import Environment
 from Spacecraft import Spacecraft
-from models.VELOCITY import VELOCITY
 from matplotlib import pyplot as plt
 
 import numpy as np
@@ -8,16 +7,16 @@ import pandas as pd
 import os
 
 # Load everything in
-environment = Environment("models/spenvisdata.csv", VELOCITY.TAYLOR)
-spacecraft = Spacecraft(environment)
+environment = Environment("models/spenvisdata.csv")
+spacecraft = Spacecraft(environment, 0.0003, environment)
 masses = [mass * 0.001 for mass in environment.getMasses()][0:140]  # gives masses in kg
 IndividualFluxes = [flux for flux in environment.getFluxes()][0:140]   # gives flux in 1/(m^2 * yr)
 diameters = [diameter * 0.01 for diameter in environment.getDiameters()][0:140]   # gives diameters in m
 densities = [density * 1000 for density in environment.getDensities()][0:140]   # gives densities in kg/m^-3
 print(masses[139])
 # Give specifications of the run
-N = 10**3
-materialType = 'TITANIUM' # CARBONFIBER / TITANIUM / ALUMINIUM
+N = 10**5
+materialType = 'ALUMINIUM' # CARBONFIBER / TITANIUM / ALUMINIUM
 thickness = 0.3 # milimeter
 
 
@@ -37,6 +36,9 @@ AA_MEAN, AA_STD, CRAT_MEAN, CRAT_STD = dataPerBin["AA_MEAN"], dataPerBin["AA_STD
 # The average total damaged area and perforations + their standard deviation
 A_MEAN = np.mean(A_tot)
 A_STD = np.std(A_tot)
+print()
+print(AA_MEAN[90])
+print(AA_STD[90])
 print(thickness)
 print(r'Total damage = ${} \pm {}$'.format(A_MEAN, A_STD))
 
@@ -56,7 +58,7 @@ for depth in Depths:
         if craterDepth > depth:
             areaDamage = areaDamage + AA_MEAN[i]
         i+=1
-        
+
     if thickness*10**-3 > depth:
         areaDamage = areaDamage + np.mean(Perf_area)
     CRAT_PROFILE.append(areaDamage)
@@ -89,7 +91,7 @@ def Plot_AA_MEAN():
     ax.grid()
 
     ax.legend(fontsize= 10)
-    figAA_MEAN.savefig(figDir + '/' + 'AA_MEAN.png', dpi= 400, bbox_inches= 'tight') 
+    figAA_MEAN.savefig(figDir + '/' + 'AA_MEAN.png', dpi= 400, bbox_inches= 'tight')
 
 # CRAT_MEAN
 def Plot_CRAT_MEAN():
@@ -101,7 +103,7 @@ def Plot_CRAT_MEAN():
     ax.set_xscale('log')
     ax.grid()
     ax.legend(fontsize= 10)
-    figCRAT_MEAN.savefig(figDir + '/' + 'CRAT_MEAN.png', dpi= 400, bbox_inches= 'tight') 
+    figCRAT_MEAN.savefig(figDir + '/' + 'CRAT_MEAN.png', dpi= 400, bbox_inches= 'tight')
 
 # Craterdepth profile
 def Plot_CRAT_PROFILE():
@@ -115,7 +117,7 @@ def Plot_CRAT_PROFILE():
 
     ax.grid()
     ax.legend(fontsize= 10)
-    figCRAT_PROFILE.savefig(figDir + '/' + 'CRAT_PROFILE.png', dpi= 400, bbox_inches= 'tight') 
+    figCRAT_PROFILE.savefig(figDir + '/' + 'CRAT_PROFILE.png', dpi= 400, bbox_inches= 'tight')
 
 # Rough Order of magnitude approx
 def Plot_Order_of_magnitude_picture():
@@ -131,7 +133,7 @@ def Plot_Order_of_magnitude_picture():
 
     ax.grid()
     #ax.legend(fontsize= 10)
-    figORDER_OM.savefig(figDir + '/' + 'ORDER_OM.png', dpi= 400, bbox_inches= 'tight') 
+    figORDER_OM.savefig(figDir + '/' + 'ORDER_OM.png', dpi= 400, bbox_inches= 'tight')
 
 def Plot_Flux():
     figFLUX, ax = plt.subplots()
@@ -142,17 +144,17 @@ def Plot_Flux():
     ax.set_yscale('log')
     ax.grid()
     #ax.legend(fontsize= 10)
-    figFLUX.savefig(figDir + '/' + 'FLUX.png', dpi= 400, bbox_inches= 'tight') 
-    
-    
-    
+    figFLUX.savefig(figDir + '/' + 'FLUX.png', dpi= 400, bbox_inches= 'tight')
+
+
+
 #PLOTTING
 
-#Plot_AA_MEAN()
-#Plot_CRAT_MEAN()
+Plot_AA_MEAN()
+Plot_CRAT_MEAN()
 #Plot_CRAT_PROFILE()
-Plot_Order_of_magnitude_picture()
-Plot_Flux()
+#Plot_Order_of_magnitude_picture()
+#Plot_Flux()
 
 plt.show()
 
