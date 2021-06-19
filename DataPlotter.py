@@ -16,7 +16,7 @@ diameters = [diameter * 0.01 for diameter in environment.getDiameters()][0:140] 
 densities = [density * 1000 for density in environment.getDensities()][0:140]   # gives densities in kg/m^-3
 print(masses[139])
 # Give specifications of the run
-N = 10**3
+N = 10**2
 materialType = 'TITANIUM' # CARBONFIBER / TITANIUM / ALUMINIUM
 thickness = 0.3 # milimeter
 
@@ -57,8 +57,8 @@ for depth in Depths:
             areaDamage = areaDamage + AA_MEAN[i]
         i+=1
         
-    if thickness*10**-3 > depth:
-        areaDamage = areaDamage + np.mean(Perf_area)
+   # if thickness*10**-3 > depth:
+        #areaDamage = areaDamage + np.mean(Perf_area)
     CRAT_PROFILE.append(areaDamage)
 
 
@@ -111,7 +111,7 @@ def Plot_CRAT_PROFILE():
     ax.set_xlabel('Craterdepth (m)', size= 15)
     ax.set_ylabel('Cumulative damaged area fraction', size= 15)
     ax.set_xscale('log')
-    ax.set_yscale('log')
+    #ax.set_yscale('log')
 
     ax.grid()
     ax.legend(fontsize= 10)
@@ -148,11 +148,11 @@ def Plot_Flux():
     
 #PLOTTING
 
-#Plot_AA_MEAN()
-#Plot_CRAT_MEAN()
-#Plot_CRAT_PROFILE()
-Plot_Order_of_magnitude_picture()
-Plot_Flux()
+Plot_AA_MEAN()
+Plot_CRAT_MEAN()
+Plot_CRAT_PROFILE()
+#Plot_Order_of_magnitude_picture()
+#Plot_Flux()
 
 plt.show()
 
