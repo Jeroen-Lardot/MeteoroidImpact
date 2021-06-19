@@ -35,29 +35,33 @@ class DamageModel:
         looptime = []
         counts = []
         perforations = 0
-        perforationsArea = [0]
+        perforationsArea = []
         for f_count in range(len(self.IndividualFluxes)):
 
             N = np.int(self.IndividualFluxes[f_count]) #amount of particles in this bin
             diameter = self.diameters[f_count]
             density = self.densities[f_count]
-            craterDepth = []
 
             if N >= 1:
                 randomVelocities = np.random.choice(self.velocities, N,
                                                     p=self.velocityDistribution / np.sum(self.velocityDistribution))
+                craterDepth = []
             else:
                 a = random.uniform(0, 1)
                 if a <= self.IndividualFluxes[f_count]:
                     N_random = 1
+                    craterDepth = []
                 else:
                     N_random = 0
+                    craterDepth = [0]
                 randomVelocities = np.random.choice(self.velocities, N_random,
                                                     p=self.velocityDistribution / np.sum(self.velocityDistribution))
 
 
+
             ### Create a pool of processes. By default, one is created for each CPU in your machine.
             A=0
+
             for velocity in randomVelocities:
                 d_c = self.__criticalDiameter(component.getThickness(), density, velocity)
                 if diameter > d_c:
@@ -67,18 +71,16 @@ class DamageModel:
                     
                     perforationsArea.append(A_perf)
                     perforations += 1
+                    craterDepth = [0]
                 else:
                     conchoidal = self.diameterConchoidal(component.getMaterial(), density, diameter, velocity)
                     diameterCrater = self.diameterCrater(component.getMaterial(), density, diameter, velocity)
                     craterDepth.append(diameterCrater/2)
                     A = A + np.pi*(conchoidal/2)**2
-         
+
 
             AA.append(A)
-            if len(craterDepth)==0:
-                CRATERDEPTH.append(0)
-            else:
-                CRATERDEPTH.append(np.mean(craterDepth))
+            CRATERDEPTH.append(np.mean(craterDepth))
 
         A_total = np.sum(AA)
 

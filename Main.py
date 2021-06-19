@@ -67,7 +67,7 @@ for i in range(N):
     if i%np.ceil(N/50) ==0:
         print('progress: {}%'.format(i/N*100))
     perforations, perforationsArea, A_total, AA, craterDepth = spacecraft.getAndereBoeg()
-    
+
     A_tot.append(A_total)
     Perf_tot.append(perforations)
     Perf_area.append(np.sum(perforationsArea))
@@ -86,6 +86,14 @@ CRAT_STD = [np.std(CratTot_bin) for CratTot_bin in Crat_tot]
 
 
 
+#print([Perf_tot, A_tot, AA_tot, craterDepth])
+
+depth = 1*10**-6 # in m
+A_depth = 0
+
+#for i in range(len(CRAT_MEAN)):
+#    if craterDepth[i] > depth:
+#        A_depth += AA[i]
 
 x=[]
 for i in range(len(environment.getMasses())-1):
