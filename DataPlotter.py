@@ -1,6 +1,5 @@
 from Environment import Environment
 from Spacecraft import Spacecraft
-from models.VELOCITY import VELOCITY
 from matplotlib import pyplot as plt
 
 import numpy as np
@@ -8,16 +7,16 @@ import pandas as pd
 import os
 
 # Load everything in
-environment = Environment("models/spenvisdata.csv", VELOCITY.TAYLOR)
-spacecraft = Spacecraft(environment)
+environment = Environment("models/spenvisdata.csv")
+spacecraft = Spacecraft(environment, 0.0003, environment)
 masses = [mass * 0.001 for mass in environment.getMasses()][0:140]  # gives masses in kg
 IndividualFluxes = [flux for flux in environment.getFluxes()][0:140]   # gives flux in 1/(m^2 * yr)
 diameters = [diameter * 0.01 for diameter in environment.getDiameters()][0:140]   # gives diameters in m
 densities = [density * 1000 for density in environment.getDensities()][0:140]   # gives densities in kg/m^-3
 print(masses[139])
 # Give specifications of the run
-N = 10**3
-materialType = 'TITANIUM' # CARBONFIBER / TITANIUM / ALUMINIUM
+N = 10**5
+materialType = 'ALUMINIUM' # CARBONFIBER / TITANIUM / ALUMINIUM
 thickness = 0.3 # milimeter
 
 
@@ -37,6 +36,9 @@ AA_MEAN, AA_STD, CRAT_MEAN, CRAT_STD = dataPerBin["AA_MEAN"], dataPerBin["AA_STD
 # The average total damaged area and perforations + their standard deviation
 A_MEAN = np.mean(A_tot)
 A_STD = np.std(A_tot)
+print()
+print(AA_MEAN[90])
+print(AA_STD[90])
 print(thickness)
 print(r'Total damage = ${} \pm {}$'.format(A_MEAN, A_STD))
 
@@ -148,11 +150,11 @@ def Plot_Flux():
     
 #PLOTTING
 
-#Plot_AA_MEAN()
-#Plot_CRAT_MEAN()
+Plot_AA_MEAN()
+Plot_CRAT_MEAN()
 #Plot_CRAT_PROFILE()
-Plot_Order_of_magnitude_picture()
-Plot_Flux()
+#Plot_Order_of_magnitude_picture()
+#Plot_Flux()
 
 plt.show()
 

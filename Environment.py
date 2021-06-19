@@ -1,10 +1,9 @@
 from models.DataExtraction import DataExtraction
-from models.VELOCITY import VELOCITY
+import pandas as pd
 
 class Environment:
-    def __init__(self, path, velocityModel):
+    def __init__(self, path):
         self.dataExtraction = DataExtraction(path)
-        self.velocityModel = velocityModel
         self.velocities = self.__calculateVelocities()
 
     def getMasses(self):
@@ -20,13 +19,10 @@ class Environment:
         return self.dataExtraction.getIndividualFluxes()
 
     def getVelocities(self):
-        return self.velocityModel.getVelocity(1)
+        return self.velocities
 
     # Method uses the velocity model to calculate an array of velocities for every mass
     def __calculateVelocities(self):
-        particleVelocities = []
-        for mass in self.dataExtraction.getMasses():
-            particleVelocities.append(self.velocityModel.getVelocity(mass)) #gives the particle velocities in km/s
-        return particleVelocities
+        return pd.read_excel('models/Distribution.xlsx', sheet_name='Sheet1', names=["velocity", "probability"])
 
 
