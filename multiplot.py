@@ -19,57 +19,23 @@ N = 10000
 materialType = 'ALUMINIUM' # CARBONFIBER / TITANIUM / ALUMINIUM
 thickness = 0.3 # milimeter
 
-
 # Get name where file is based
-basename = 'run_{}_{}_{}'.format(N, materialType, thickness)
-path = '../Simulation_data/' + basename
+basename1 = 'run_{}_{}_{}'.format(20000, 'TITANIUM', 0.3)
+basename2 = 'run_{}_{}_{}'.format(20000, 'TITANIUM', 0.6)
+basename3 = 'run_{}_{}_{}'.format(20000, 'TITANIUM', 1.0)
+path1 = '../Simulation_data/' + basename1
+path2 = '../Simulation_data/' + basename2
+path3 = '../Simulation_data/' + basename3
 
 # Retrieve files and data
-dataPerRun = pd.read_csv(path + '/' + 'dataPerRun.csv', header=0, sep='\t')
-dataPerBin = pd.read_csv(path + '/' + 'dataPerBin.csv', header=0, sep='\t')
-print(dataPerBin)
+dataPerBin1 = pd.read_csv(path1 + '/' + 'dataPerBin.csv', header=0, sep='\t')
+dataPerBin2 = pd.read_csv(path2 + '/' + 'dataPerBin.csv', header=0, sep='\t')
+dataPerBin3 = pd.read_csv(path3 + '/' + 'dataPerBin.csv', header=0, sep='\t')
 
 # Unpack all the data
-A_tot, Perf_tot, Perf_area = dataPerRun["A_tot"], dataPerRun["Perf_tot"], dataPerRun["Perf_area"]
-AA_MEAN, AA_STD, CRAT_MEAN, CRAT_STD = dataPerBin["AA_MEAN"], dataPerBin["AA_STD"],dataPerBin["CRAT_MEAN"], dataPerBin["CRAT_STD"]
-
-# The average total damaged area and perforations + their standard deviation
-A_MEAN = np.mean(A_tot)
-A_STD = np.std(A_tot)
-print()
-print(AA_MEAN[90])
-print(AA_STD[90])
-print(thickness)
-print(r'Total damage = ${} \pm {}$'.format(A_MEAN, A_STD))
-
-perf_MEAN = np.mean(Perf_tot)
-perf_STD = np.std(Perf_tot)
-print(r'Perforations = ${} \pm {}$'.format(perf_MEAN, perf_STD))
-print(r'Perforation Area = ${} \pm {}$'.format(np.mean(Perf_area), np.std(Perf_area)))
-
-# Make craterdepth-profile
-depth_i, depth_f = [-3, -8]
-CRAT_PROFILE = []
-Depths = 10**np.linspace(depth_i,depth_f,1000)
-for depth in Depths:
-    i=0
-    areaDamage = 0
-    for craterDepth in CRAT_MEAN:
-        if craterDepth > depth:
-            areaDamage = areaDamage + AA_MEAN[i]
-        i+=1
-
-    if thickness*10**-3 > depth:
-        areaDamage = areaDamage + np.mean(Perf_area)
-    CRAT_PROFILE.append(areaDamage)
-
-
-# Set directory where plots will appear
-if not os.path.exists('../plots/'):
-    os.mkdir('../plots/')
-figDir = '../plots/' + basename
-if not os.path.exists(figDir):
-    os.mkdir(figDir)
+AA_MEAN1, AA_STD1, CRAT_MEAN1, CRAT_STD1 = dataPerBin1["AA_MEAN"], dataPerBin1["AA_STD"],dataPerBin1["CRAT_MEAN"], dataPerBin1["CRAT_STD"]
+AA_MEAN2, AA_STD2, CRAT_MEAN2, CRAT_STD2 = dataPerBin2["AA_MEAN"], dataPerBin2["AA_STD"],dataPerBin2["CRAT_MEAN"], dataPerBin2["CRAT_STD"]
+AA_MEAN3, AA_STD3, CRAT_MEAN3, CRAT_STD3 = dataPerBin3["AA_MEAN"], dataPerBin3["AA_STD"],dataPerBin3["CRAT_MEAN"], dataPerBin3["CRAT_STD"]
 
 # Define plotting choices
 plotColor = 'steelblue'
@@ -84,28 +50,47 @@ plt.style.use("default")
 # AA_MEAN
 def Plot_AA_MEAN():
     figAA_MEAN, ax = plt.subplots()
-    ax.scatter(np.log10(masses), AA_MEAN, s=10, color=plotColor, label='{}, Thickness = {} mm'.format(materialType.lower(), thickness))
-    ax.errorbar(np.log10(masses), AA_MEAN, yerr = AA_STD, ecolor=errorColor, elinewidth=errorThickness, capsize=errorCapsize, fmt='none', marker="none")
+
+    ax.scatter(np.log10(masses), AA_MEAN1, s=20, color='steelblue', marker="v", label='{}, Thickness = {} mm'.format('TITANIUM', 0.3))
+    ax.plot(np.log10(masses), AA_MEAN1, color='steelblue',alpha=0.4)
+    #ax.errorbar(np.log10(masses), AA_MEAN1, yerr = AA_STD1, ecolor=errorColor, elinewidth=errorThickness, capsize=errorCapsize, fmt='none', marker="none")
+
+    ax.scatter(np.log10(masses), AA_MEAN2, s=20, color="r",marker='x', label='{}, Thickness = {} mm'.format('TITANIUM', 0.6))
+    ax.plot(np.log10(masses), AA_MEAN2, color='r',alpha=0.4)
+    #ax.errorbar(np.log10(masses), AA_MEAN2, yerr = AA_STD2, ecolor=errorColor, elinewidth=errorThickness, capsize=errorCapsize, fmt='none', marker="none")
+
+    ax.scatter(np.log10(masses), AA_MEAN3, s=20, color="y", label='{}, Thickness = {} mm'.format('TITANIUM', 1.0))
+    ax.plot(np.log10(masses), AA_MEAN3, color='y',alpha=0.4)
+    ax.errorbar(np.log10(masses), AA_MEAN3, yerr = AA_STD3, ecolor=errorColor, elinewidth=errorThickness, capsize=errorCapsize, fmt='none', marker="none")
+    plt.ylim(0,8*10**-7)
     ax.set_xlabel('$\log$ Masses (kg)', size= 15)
     ax.set_ylabel('Damaged area fraction', size= 15)
     #ax.set_xscale('log')
     ax.grid()
-
-
     ax.legend(fontsize= 10)
-    figAA_MEAN.savefig(figDir + '/' + 'AA_MEAN.png', dpi= 400, bbox_inches= 'tight')
 
 # CRAT_MEAN
 def Plot_CRAT_MEAN():
     figCRAT_MEAN, ax = plt.subplots()
-    ax.scatter(masses, np.log10(CRAT_MEAN), s=10, color=plotColor, label='{}, Thickness = {} mm'.format(materialType.lower(), thickness))
-    ax.errorbar(masses, np.log10(CRAT_MEAN), yerr = CRAT_STD, ecolor=errorColor, elinewidth=errorThickness, capsize=errorCapsize, fmt='none', marker="none")
+
+    ax.scatter(masses, np.log10(CRAT_MEAN1), s=20, color='steelblue', marker="v", label='{}, Thickness = {} mm'.format('TITANIUM', 0.3))
+    ax.plot(masses, np.log10(CRAT_MEAN1), color='steelblue',alpha=0.4)
+    ax.errorbar(masses, np.log10(CRAT_MEAN1), yerr = CRAT_STD1, ecolor=errorColor, elinewidth=errorThickness, capsize=errorCapsize, fmt='none', marker="none")
+
+    ax.scatter(masses, np.log10(CRAT_MEAN2), s=20, color='r', marker="x", label='{}, Thickness = {} mm'.format('TITANIUM', 0.6))
+    ax.plot(masses, np.log10(CRAT_MEAN2), color='r',alpha=0.4)
+    ax.errorbar(masses, np.log10(CRAT_MEAN2), yerr = CRAT_STD2, ecolor=errorColor, elinewidth=errorThickness, capsize=errorCapsize, fmt='none', marker="none")
+
+    ax.scatter(masses, np.log10(CRAT_MEAN3), s=20, color='y', label='{}, Thickness = {} mm'.format('TITANIUM', 1.0))
+    ax.plot(masses, np.log10(CRAT_MEAN3), color='y',alpha=0.4)
+    ax.errorbar(masses, np.log10(CRAT_MEAN3), yerr = CRAT_STD3, ecolor=errorColor, elinewidth=errorThickness, capsize=errorCapsize, fmt='none', marker="none")
+
+
     ax.set_xlabel('Masses (kg)', size= 15)
-    ax.set_ylabel('Craterdepth (m)', size= 15)
+    ax.set_ylabel('(log) Craterdepth (m)', size= 15)
     ax.set_xscale('log')
     ax.grid()
     ax.legend(fontsize= 10)
-    figCRAT_MEAN.savefig(figDir + '/' + 'CRAT_MEAN.png', dpi= 400, bbox_inches= 'tight')
 
 # Craterdepth profile
 def Plot_CRAT_PROFILE():
@@ -159,5 +144,3 @@ Plot_CRAT_MEAN()
 #Plot_Flux()
 
 plt.show()
-
-

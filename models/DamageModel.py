@@ -33,8 +33,8 @@ class DamageModel:
 
     def alternative(self, spacecraft, environment):
         AA = []
-        CRATERDEPTH = [[] for i in range(140)]
-        binCounter = [[] for i in range(140)]
+        CRATERDEPTH = [[] for i in range(112)]
+        binCounter = [[] for i in range(112)]
         looptime = []
         counts = []
         perforations = 0
@@ -81,7 +81,7 @@ class DamageModel:
                     CRATERDEPTH.append(diameterCrater / 2)
                     A_conch = np.pi * (conchoidal / 2) ** 2
                     A = A + A_conch
-                    #binCounter[i].append(A_conch)
+                    binCounter[i].append(A_conch)
             AA.append(A)
             i=i+1
         A_total = np.sum(AA)

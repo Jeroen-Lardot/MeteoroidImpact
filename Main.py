@@ -10,9 +10,9 @@ import multiprocessing
 from numba import jit,cuda
 
 # Specify variables for the run
-N = 10000
+N = 20000
 environment = Environment("models/spenvisdata.csv")
-spacecraft = Spacecraft(MATERIAL.ALUMINIUM, 0.0003, environment)
+spacecraft = Spacecraft(MATERIAL.CARBONFIBER, 0.0003, environment)
 
 
 def f(input):
@@ -29,7 +29,7 @@ if __name__ == '__main__':
     results = list(zip(*pool.map(f, [i for i in range(N)])))
     pool.close()
     pool.join()
-    print('progress: {}%'.format(100))
+    print('progress: {}%'.format(100.0))
     print('Processing Data...')
 
     # Define data
@@ -41,8 +41,8 @@ if __name__ == '__main__':
     Perf_max = [np.max(item) for item in results[1]]
 
 
-    binTotals = [[] for i in range(140)]
-    craterTotals = [[] for i in range(140)]
+    binTotals = [[] for i in range(112)]
+    craterTotals = [[] for i in range(112)]
     for i in range(len(binTotals)):
         for j in range(len(binSubTotals)):
             binTotals[i].extend(binSubTotals[j][i])
@@ -54,16 +54,15 @@ if __name__ == '__main__':
         N2 = N2 + len(binTotals[i])
 
     print("Calculating Bins...")
-    binMEAN = [[] for i in range(140)]
-    binSTD = [[] for i in range(140)]
-    craterMEAN = [[] for i in range(140)]
-    craterSTD = [[] for i in range(140)]
+    binMEAN = [[] for i in range(112)]
+    binSTD = [[] for i in range(112)]
+    craterMEAN = [[] for i in range(112)]
+    craterSTD = [[] for i in range(112)]
     for i in range(len(binTotals)):
         binMEAN[i] = (len(binTotals[i])/N2) * np.average(binTotals[i])*8.00*10**3 #times flux to get yearly particle damage
         binSTD[i] = (len(binTotals[i])/N2) * np.std(binTotals[i])*8.00*10**3
         craterMEAN[i] = np.average(binTotals[i])
         craterSTD[i] = np.std(binTotals[i])
-        print(len(binTotals[i]))
 
     binMEAN = pd.DataFrame(binMEAN).fillna(0)
     binSTD = pd.DataFrame(binSTD).fillna(0)
