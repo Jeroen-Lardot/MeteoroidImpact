@@ -33,12 +33,13 @@ class DamageModel:
 
     def alternative(self, spacecraft, environment):
         AA = []
-        CRATERDEPTH = []
-
+        CRATERDEPTH = [[] for i in range(140)]
+        binCounter = [[] for i in range(140)]
         looptime = []
         counts = []
         perforations = 0
         perforationsArea = []
+        i=0
         for f_count in range(len(self.IndividualFluxes)):
             N = np.int(self.IndividualFluxes[f_count])  # amount of particles in this bin
             diameter = self.diameters[f_count]
@@ -46,22 +47,20 @@ class DamageModel:
             if N >= 1:
                 randomVelocities = np.random.choice(self.velocities, N,
                                                     p=self.velocityDistribution / np.sum(self.velocityDistribution))
-                craterDepth = []
             else:
                 a = random.uniform(0, 1)
                 if a <= self.IndividualFluxes[f_count]:
-                    N_random = 1
-                    craterDepth = []
+                    N = 1
                 else:
-                    N_random = 0
-                    craterDepth = [0]
-                randomVelocities = np.random.choice(self.velocities, N_random,
+                    N = 0
+                randomVelocities = np.random.choice(self.velocities, N,
                                                     p=self.velocityDistribution / np.sum(self.velocityDistribution))
 
             ### Create a pool of processes. By default, one is created for each CPU in your machine.
             A = 0
 
             for velocity in randomVelocities:
+
                 begin = time.perf_counter()
                 d_c = self.__criticalDiameter(spacecraft.getThickness(), density, velocity)
                 #print("Time taken: ", time.perf_counter() - begin)
@@ -74,18 +73,19 @@ class DamageModel:
 
                     perforationsArea.append(A_perf)
                     perforations += 1
-                    craterDepth = [0]
+                    CRATERDEPTH[i].append(spacecraft.getThickness())
+                    binCounter[i].append(A_perf)
                 else:
                     conchoidal = self.diameterConchoidal(spacecraft.getMaterial(), density, diameter, velocity)
                     diameterCrater = self.diameterCrater(spacecraft.getMaterial(), density, diameter, velocity)
-                    craterDepth.append(diameterCrater / 2)
-                    A = A + np.pi * (conchoidal / 2) ** 2
-
+                    CRATERDEPTH.append(diameterCrater / 2)
+                    A_conch = np.pi * (conchoidal / 2) ** 2
+                    A = A + A_conch
+                    #binCounter[i].append(A_conch)
             AA.append(A)
-            CRATERDEPTH.append(np.mean(craterDepth))
-
+            i=i+1
         A_total = np.sum(AA)
-        return [perforations, perforationsArea, A_total, AA, CRATERDEPTH]
+        return [perforations, perforationsArea, A_total, AA, CRATERDEPTH, binCounter]
 
 
     def andereBoeg(self, spacecraft, environment):

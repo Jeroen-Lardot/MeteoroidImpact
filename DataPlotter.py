@@ -6,16 +6,17 @@ import numpy as np
 import pandas as pd
 import os
 
-# Load everything in
+from models.MATERIAL import MATERIAL
+
 environment = Environment("models/spenvisdata.csv")
-spacecraft = Spacecraft(environment, 0.0003, environment)
+spacecraft = Spacecraft(MATERIAL.ALUMINIUM, 0.0003, environment)
 masses = [mass * 0.001 for mass in environment.getMasses()][0:140]  # gives masses in kg
 IndividualFluxes = [flux for flux in environment.getFluxes()][0:140]   # gives flux in 1/(m^2 * yr)
 diameters = [diameter * 0.01 for diameter in environment.getDiameters()][0:140]   # gives diameters in m
 densities = [density * 1000 for density in environment.getDensities()][0:140]   # gives densities in kg/m^-3
 print(masses[139])
 # Give specifications of the run
-N = 10**5
+N = 10000
 materialType = 'ALUMINIUM' # CARBONFIBER / TITANIUM / ALUMINIUM
 thickness = 0.3 # milimeter
 
@@ -88,6 +89,7 @@ def Plot_AA_MEAN():
     ax.errorbar(np.log10(masses), AA_MEAN, yerr = AA_STD, ecolor=errorColor, elinewidth=errorThickness, capsize=errorCapsize, fmt='none', marker="none")
     ax.set_xlabel('$\log$ Masses (kg)', size= 15)
     ax.set_ylabel('Damaged area fraction', size= 15)
+    #ax.set_xscale('log')
     ax.grid()
 
     ax.legend(fontsize= 10)
@@ -96,8 +98,8 @@ def Plot_AA_MEAN():
 # CRAT_MEAN
 def Plot_CRAT_MEAN():
     figCRAT_MEAN, ax = plt.subplots()
-    ax.scatter(masses, CRAT_MEAN, s=10, color=plotColor, label='{}, Thickness = {} mm'.format(materialType.lower(), thickness))
-    ax.errorbar(masses, CRAT_MEAN, yerr = CRAT_STD, ecolor=errorColor, elinewidth=errorThickness, capsize=errorCapsize, fmt='none', marker="none")
+    ax.scatter(masses, np.log10(CRAT_MEAN), s=10, color=plotColor, label='{}, Thickness = {} mm'.format(materialType.lower(), thickness))
+    ax.errorbar(masses, np.log10(CRAT_MEAN), yerr = CRAT_STD, ecolor=errorColor, elinewidth=errorThickness, capsize=errorCapsize, fmt='none', marker="none")
     ax.set_xlabel('Masses (kg)', size= 15)
     ax.set_ylabel('Craterdepth (m)', size= 15)
     ax.set_xscale('log')
