@@ -12,7 +12,7 @@ from numba import jit,cuda
 # Specify variables for the run
 N = 20000
 environment = Environment("models/spenvisdata.csv")
-spacecraft = Spacecraft(MATERIAL.CARBONFIBER, 0.0003, environment)
+spacecraft = Spacecraft(MATERIAL.ALUMINIUM, 0.0010, environment)
 
 
 def f(input):
@@ -37,8 +37,15 @@ if __name__ == '__main__':
     Perf_tot = results[0]
     binSubTotals = results[5]
     craterSubTotals = results[4]
-    Perf_area = [np.sum(item) for item in results[1]]
-    Perf_max = [np.max(item) for item in results[1]]
+
+    Perf_area = []
+    Perf_max = []
+    for item in results[1]:
+        Perf_area.append(np.sum(item))
+        if len(item) == 0:
+            Perf_max.append(0)
+        else:
+            Perf_max.append(np.max(item))
 
 
     binTotals = [[] for i in range(112)]

@@ -36,10 +36,6 @@ AA_MEAN, AA_STD, CRAT_MEAN, CRAT_STD = dataPerBin["AA_MEAN"], dataPerBin["AA_STD
 # The average total damaged area and perforations + their standard deviation
 A_MEAN = np.mean(A_tot)
 A_STD = np.std(A_tot)
-print()
-print(AA_MEAN[90])
-print(AA_STD[90])
-print(thickness)
 print(r'Total damage = ${} \pm {}$'.format(A_MEAN, A_STD))
 
 perf_MEAN = np.mean(Perf_tot)
