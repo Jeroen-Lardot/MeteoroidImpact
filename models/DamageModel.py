@@ -26,6 +26,7 @@ class DamageModel:
         self.densities = [density * 1000 for density in environment.getDensities()]  # gives densities in kg/m^-3
 
 
+
     def createDictionaries(self, spacecraft):
         criticalDiameterDictionary = dict()
         for velocity in self.velocities:
@@ -71,16 +72,16 @@ class DamageModel:
                                                         density) / 2) ** 2  # the area a particle of mass m and velocity v would damage
                     A = A + A_perf
 
-                    perforationsArea.append(A_perf)
+                    #perforationsArea.append(A_perf)
                     perforations += 1
-                    CRATERDEPTH[i].append(spacecraft.getThickness())
-                    binCounter[i].append(A_perf)
+                    #CRATERDEPTH[i].append(spacecraft.getThickness())
+                    #binCounter[i].append(A_perf)
                 else:
                     conchoidal = self.diameterConchoidal(spacecraft.getMaterial(), density, diameter, velocity)
                     diameterCrater = self.diameterCrater(spacecraft.getMaterial(), density, diameter, velocity)
-                    CRATERDEPTH.append(diameterCrater / 2)
+                    #CRATERDEPTH.append(diameterCrater / 2)
                     A_conch = np.pi * (conchoidal / 2) ** 2
-                    A = A + A_conch
+                    #A = A + A_conch
                     binCounter[i].append(A_conch)
             AA.append(A)
             i=i+1

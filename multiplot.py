@@ -16,7 +16,7 @@ diameters = [diameter * 0.01 for diameter in environment.getDiameters()][0:112] 
 densities = [density * 1000 for density in environment.getDensities()][0:112]   # gives densities in kg/m^-3
 # Give specifications of the run
 N = 20000
-materialType = 'ALUMINIUM' # CARBONFIBER / TITANIUM / ALUMINIUM
+materialType = 'CARBONFIBER' # CARBONFIBER / TITANIUM / ALUMINIUM
 
 # Get name where file is based
 thickness1 = 0.3
@@ -52,20 +52,7 @@ A_tot3, Perf_tot3, Perf_area3 = dataPerRun3["A_tot"], dataPerRun3["Perf_tot"], d
 
 #crater profile
 
-depth_i, depth_f = [-3, -8]
-CRAT_PROFILE = []
-Depths = 10**np.linspace(depth_i,depth_f,1000)
-for depth in Depths:
-    i=0
-    areaDamage = 0
-    for craterDepth in CRAT_MEAN1:
-        if craterDepth > depth:
-            areaDamage = areaDamage + AA_MEAN1[i]
-        i+=1
 
-    if thickness1*10**-3 > depth:
-        areaDamage = areaDamage + np.mean(Perf_area1)
-    CRAT_PROFILE.append(areaDamage)
 
 #table
 A_MEAN1 = np.mean(A_tot1)
@@ -73,19 +60,53 @@ A_STD1 = np.std(A_tot1)
 perf_MEAN1 = np.mean(Perf_tot1)
 perf_STD1 = np.std(Perf_tot1)
 
+Crater_area1 = A_tot1-Perf_area1
+craterVolumes1 = [(3/8)*Crater_area1[i]*diameters[i]/2 for i in range(len(diameters))]
+perfVolumes1 = [Perf_area1[i]*thickness1*10**-3 for i in range(len(diameters))]
+CraterEjecta1 = sum(craterVolumes1)
+PerfEjecta1 = sum(perfVolumes1)
+VER1 = CraterEjecta1 + PerfEjecta1
+
 A_MEAN2 = np.mean(A_tot2)
 A_STD2 = np.std(A_tot2)
 perf_MEAN2 = np.mean(Perf_tot2)
 perf_STD2 = np.std(Perf_tot2)
+
+Crater_area2 = A_tot2-Perf_area2
+craterVolumes2 = [(3/8)*Crater_area2[i]*diameters[i]/2 for i in range(len(diameters))]
+perfVolumes2 = [Perf_area2[i]*thickness2*10**-3 for i in range(len(diameters))]
+CraterEjecta2 = sum(craterVolumes2)
+PerfEjecta2 = sum(perfVolumes2)
+VER2 = CraterEjecta2 + PerfEjecta2
 
 A_MEAN3 = np.mean(A_tot3)
 A_STD3 = np.std(A_tot3)
 perf_MEAN3 = np.mean(Perf_tot3)
 perf_STD3 = np.std(Perf_tot3)
 
+Crater_area3 = A_tot3-Perf_area3
+craterVolumes3 = [(3/8)*Crater_area3[i]*diameters[i]/2 for i in range(len(diameters))]
+perfVolumes3 = [Perf_area3[i]*thickness3*10**-3 for i in range(len(diameters))]
+CraterEjecta3 = sum(craterVolumes3)
+PerfEjecta3 = sum(perfVolumes3)
+VER3 = CraterEjecta3 + PerfEjecta3
+
 print(r'Total damage = ${} \pm {}$'.format(A_MEAN1, A_STD1))
 print(r'Perforations = ${} \pm {}$'.format(perf_MEAN1, perf_STD1))
 print(r'Perforation Area = ${} \pm {}$'.format(np.mean(Perf_area1), np.std(Perf_area1)))
+print(r'Crater Area = ${} \pm {}$'.format(Crater_area1,0))
+print(r'Crater VER = ${} \pm {}$'.format(CraterEjecta1,0))
+print(r'Perforation VER = ${} \pm {}$'.format(PerfEjecta1,0))
+print(r'Total VER = ${} \pm {}$'.format(VER1,0))
+
+print(r'Crater VER = ${} \pm {}$'.format(CraterEjecta2,0))
+print(r'Perforation VER = ${} \pm {}$'.format(PerfEjecta2,0))
+print(r'Total VER = ${} \pm {}$'.format(VER2,0))
+
+print(r'Crater VER = ${} \pm {}$'.format(CraterEjecta3,0))
+print(r'Perforation VER = ${} \pm {}$'.format(PerfEjecta3,0))
+print(r'Total VER = ${} \pm {}$'.format(VER3,0))
+
 
 Materials = [materialType,materialType,materialType]
 Thickness = [thickness1,thickness2,thickness3]
@@ -95,7 +116,7 @@ TotFADR = [str(round(A_MEAN1,8))+'(pm '+str(round(A_STD1,8))+')',str(round(A_MEA
 
 
 df = pd.DataFrame(dict(Materials=Materials,Thickness=Thickness, Perforations=Perforations, Perforation_FADR = PerfFADR, Total_FADR = TotFADR))
-print(df.to_latex(index=False))
+#print(df.to_latex(index=False))
 
 
 # Define plotting choices
@@ -116,15 +137,15 @@ plt.rc('ytick',labelsize=size)
 def Plot_AA_MEAN():
     figAA_MEAN, ax = plt.subplots()
 
-    ax.scatter(np.log10(masses), AA_MEAN1, s=20, color='steelblue', marker="v", label='{}, Thickness = {} mm'.format('TITANIUM', 0.3))
+    ax.scatter(np.log10(masses), AA_MEAN1, s=20, color='steelblue', marker="v", label='{}, Thickness = {} mm'.format('ALUMINIUM', 1.0))
     ax.plot(np.log10(masses), AA_MEAN1, color='steelblue',alpha=0.4)
     #ax.errorbar(np.log10(masses), AA_MEAN1, yerr = AA_STD1, ecolor=errorColor, elinewidth=errorThickness, capsize=errorCapsize, fmt='none', marker="none")
 
-    ax.scatter(np.log10(masses), AA_MEAN2, s=20, color="r",marker='x', label='{}, Thickness = {} mm'.format('TITANIUM', 0.6))
+    ax.scatter(np.log10(masses), AA_MEAN2, s=20, color="r",marker='x', label='{}, Thickness = {} mm'.format('TITANIUM', 1.0))
     ax.plot(np.log10(masses), AA_MEAN2, color='r',alpha=0.4)
     #ax.errorbar(np.log10(masses), AA_MEAN2, yerr = AA_STD2, ecolor=errorColor, elinewidth=errorThickness, capsize=errorCapsize, fmt='none', marker="none")
 
-    ax.scatter(np.log10(masses), AA_MEAN3, s=20, color="y", label='{}, Thickness = {} mm'.format('TITANIUM', 1.0))
+    ax.scatter(np.log10(masses), AA_MEAN3, s=20, color="y", label='{}, Thickness = {} mm'.format('CARBONFIBER', 1.0))
     ax.plot(np.log10(masses), AA_MEAN3, color='y',alpha=0.4)
     ax.errorbar(np.log10(masses), AA_MEAN3, yerr = AA_STD3, ecolor=errorColor, elinewidth=errorThickness, capsize=errorCapsize, fmt='none', marker="none")
     plt.ylim(0,8*10**-7)
@@ -138,24 +159,24 @@ def Plot_AA_MEAN():
 def Plot_CRAT_MEAN():
     figCRAT_MEAN, ax = plt.subplots()
 
-    ax.scatter(masses, np.log10(CRAT_MEAN1), s=20, color='steelblue', marker="v", label='{}, Thickness = {} mm'.format('TITANIUM', 0.3))
+    ax.scatter(masses, np.log10(CRAT_MEAN1), s=20, color='steelblue', marker="v", label='{}, Thickness = {} mm'.format('ALUMINIUM', 1.0))
     ax.plot(masses, np.log10(CRAT_MEAN1), color='steelblue',alpha=0.4)
     ax.errorbar(masses, np.log10(CRAT_MEAN1), yerr = CRAT_STD1, ecolor=errorColor, elinewidth=errorThickness, capsize=errorCapsize, fmt='none', marker="none")
 
-    ax.scatter(masses, np.log10(CRAT_MEAN2), s=20, color='r', marker="x", label='{}, Thickness = {} mm'.format('TITANIUM', 0.6))
+    ax.scatter(masses, np.log10(CRAT_MEAN2), s=20, color='r', marker="x", label='{}, Thickness = {} mm'.format('TITANIUM', 1.0))
     ax.plot(masses, np.log10(CRAT_MEAN2), color='r',alpha=0.4)
     ax.errorbar(masses, np.log10(CRAT_MEAN2), yerr = CRAT_STD2, ecolor=errorColor, elinewidth=errorThickness, capsize=errorCapsize, fmt='none', marker="none")
 
-    ax.scatter(masses, np.log10(CRAT_MEAN3), s=20, color='y', label='{}, Thickness = {} mm'.format('TITANIUM', 1.0))
+    ax.scatter(masses, np.log10(CRAT_MEAN3), s=20, color='y', label='{}, Thickness = {} mm'.format('CARBONFIBER', 1.0))
     ax.plot(masses, np.log10(CRAT_MEAN3), color='y',alpha=0.4)
     ax.errorbar(masses, np.log10(CRAT_MEAN3), yerr = CRAT_STD3, ecolor=errorColor, elinewidth=errorThickness, capsize=errorCapsize, fmt='none', marker="none")
 
 
-    ax.set_xlabel('Masses (kg)', size= 15)
-    ax.set_ylabel('(log) Craterdepth (m)', size= 15)
+    ax.set_xlabel('Masses (kg)', size= size)
+    ax.set_ylabel('(log) Craterdepth (m)', size= size)
     ax.set_xscale('log')
     ax.grid()
-    ax.legend(fontsize= 10, prop={'size': 6})
+    ax.legend(fontsize= size)
 
 # Craterdepth profile
 def Plot_CRAT_PROFILE():
@@ -203,7 +224,7 @@ def Plot_Flux():
 
 Plot_AA_MEAN()
 Plot_CRAT_MEAN()
-Plot_CRAT_PROFILE()
+#Plot_CRAT_PROFILE()
 #Plot_Order_of_magnitude_picture()
 #Plot_Flux()
 

@@ -17,7 +17,7 @@ densities = [density * 1000 for density in environment.getDensities()][0:112]   
 # Give specifications of the run
 N = 10000
 materialType = 'ALUMINIUM' # CARBONFIBER / TITANIUM / ALUMINIUM
-thickness = 0.3 # milimeter
+thickness = 1.0 # milimeter
 
 
 # Get name where file is based
