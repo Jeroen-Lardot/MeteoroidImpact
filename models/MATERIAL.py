@@ -1,9 +1,9 @@
 from enum import Enum, auto
 
+#Defines the properties of materials to be studied.
 class MATERIAL(Enum):
     ALUMINIUM = "Al"
     CARBONFIBER = "CF"
-    IRON = "Fe"
     TITANIUM = "Ti"
 
 

@@ -10,11 +10,12 @@ import multiprocessing
 from numba import jit,cuda
 
 # Specify variables for the run
-N = 10000
+N = 20000
 environment = Environment("models/spenvisdata.csv")
 spacecraft = Spacecraft(MATERIAL.ALUMINIUM, 0.0010, environment)
 
 
+#Single model run
 def f(input):
     if input % np.ceil(N / 10) == 0:
         print('progress: {}%'.format(input / N * 100))
@@ -24,7 +25,7 @@ def f(input):
 if __name__ == '__main__':
 
     # Calculate data using multiprocessing to speed up the process
-    # with a factor = #number of cpus on the device.
+    # with a factor = #number of cpus on the device. Disable if slow computer!
     pool = Pool(multiprocessing.cpu_count()-1)
     results = list(zip(*pool.map(f, [i for i in range(N)])))
     pool.close()

@@ -1,6 +1,8 @@
 from models.DataExtraction import DataExtraction
 import pandas as pd
 
+#This class defines the dust environment from the taylor velocity distribution
+#and the grün flux.
 class Environment:
     def __init__(self, path):
         self.dataExtraction = DataExtraction(path)

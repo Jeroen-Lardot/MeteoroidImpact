@@ -178,7 +178,7 @@ def Plot_CRAT_MEAN():
     ax.grid()
     ax.legend(fontsize= size)
 
-# Craterdepth profile
+# Craterdepth profile: TO IMPLEMENT IN MULTIPLOT
 def Plot_CRAT_PROFILE():
     figCRAT_PROFILE, ax = plt.subplots()
     ax.scatter(Depths, CRAT_PROFILE, s=5, color=plotColor, label='{}, Thickness = {} mm'.format(materialType.lower(), 0.3))
@@ -191,7 +191,7 @@ def Plot_CRAT_PROFILE():
     ax.grid()
     ax.legend(fontsize= 10)
 
-# Rough Order of magnitude approx
+# Rough Order of magnitude approx: TO IMPLEMENT IN MULTIPLOT
 def Plot_Order_of_magnitude_picture():
     Rough_damaged_area = np.pi*(np.array(diameters)*(1/2))**2
     expDamage = Rough_damaged_area*IndividualFluxes
@@ -207,6 +207,7 @@ def Plot_Order_of_magnitude_picture():
     #ax.legend(fontsize= 10)
     figORDER_OM.savefig(figDir + '/' + 'ORDER_OM.png', dpi= 400, bbox_inches= 'tight')
 
+#Flux: TO IMPLEMENT IN MULTIPLOT
 def Plot_Flux():
     figFLUX, ax = plt.subplots()
     ax.scatter(masses, IndividualFluxes, s=5, color=plotColor)

@@ -25,7 +25,7 @@ basename = 'run_{}_{}_{}'.format(N, materialType, thickness)
 path = '../Simulation_data/' + basename
 
 # Retrieve files and data
-dataPerRun = pd.read_csv(path + '/' + 'dataPerRun.csv', header=0, sep='\t')
+dataPerRun = pd.read_csv(path + '/' + 'dataPerun.csv', header=0, sep='\t')
 dataPerBin = pd.read_csv(path + '/' + 'dataPerBin.csv', header=0, sep='\t')
 print(dataPerBin)
 

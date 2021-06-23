@@ -2,6 +2,7 @@ import pandas as pd
 from scipy.integrate import trapz
 import numpy as np
 
+#Class gets the data from csv files for use in other classes.
 class DataExtraction:
     def __init__(self, path):
         self.path = path
